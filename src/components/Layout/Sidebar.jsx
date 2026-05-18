@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo_icon from "../../assets/cetrak-logo.png";
-import { X, LogOut } from "lucide-react";
+
 import {
+  X,
+  LogOut,
   LayoutDashboard,
   Users,
   Building2,
@@ -22,14 +24,22 @@ import {
 const Sidebar = ({ onLogout, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role || user?.user?.role || "Guest";
 
   const allMenuItems = [
     {
       section: "MAIN",
-      items: [{ name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" }],
+      items: [
+        {
+          name: "Dashboard",
+          icon: LayoutDashboard,
+          path: "/dashboard",
+        },
+      ],
     },
+
     {
       section: "USERS",
       items: [
@@ -38,6 +48,7 @@ const Sidebar = ({ onLogout, onClose }) => {
         { name: "Dealers", icon: Briefcase, path: "/dealers" },
       ],
     },
+
     {
       section: "PRODUCT",
       items: [
@@ -49,6 +60,7 @@ const Sidebar = ({ onLogout, onClose }) => {
         { name: "Redemption", icon: Coins, path: "/redemption" },
       ],
     },
+
     {
       section: "SYSTEM",
       items: [
@@ -72,7 +84,8 @@ const Sidebar = ({ onLogout, onClose }) => {
     .map((menu) => ({
       ...menu,
       items: menu.items.filter(
-        (item) => allowed.includes("*") || allowed.includes(item.name)
+        (item) =>
+          allowed.includes("*") || allowed.includes(item.name)
       ),
     }))
     .filter((menu) => menu.items.length > 0);
@@ -88,66 +101,178 @@ const Sidebar = ({ onLogout, onClose }) => {
   }, [role, navigate, location.pathname]);
 
   return (
-    <aside className="w-64 h-full flex flex-col text-white 
-    bg-gradient-to-b from-[#8B3DFF] via-[#5A6BFF] to-[#00C4CC] shadow-xl">
+    <aside
+      className="
+      w-[245px]
+      h-full
+      flex flex-col
+      bg-[#F2ECFA]
+      border-r border-[#E9E2F3]
+      "
+    >
+      {/* ===== LOGO ===== */}
+      <div className="flex items-center justify-between px-5 py-3.5">
 
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <img src={logo_icon} alt="logo" className="w-9 h-9 rounded-md" />
-          <h2 className="text-sm font-semibold tracking-wide">
-            CETRAK
-          </h2>
+        <div className="flex items-center gap-2.5">
+          <img
+            src={logo_icon}
+            alt="logo"
+            className="w-8 h-8 rounded-lg"
+          />
+
+          <div>
+            <h2 className="text-[20px] font-bold text-[#5B3FD6] leading-none">
+              LoyaltyTown
+            </h2>
+
+            <p className="text-[9px] text-[#8E8AA2] mt-0.5">
+              Rewards Platform
+            </p>
+          </div>
         </div>
 
         <button
           onClick={onClose}
-          className="lg:hidden p-1 hover:bg-white/10 rounded-md transition"
+          className="
+          lg:hidden
+          p-1 rounded-md
+          hover:bg-white
+          transition
+          "
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 text-[#8E8AA2]" />
         </button>
       </div>
 
-      {/* Menu */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6 custom-scrollbar">
+      {/* ===== MENU ===== */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 custom-scrollbar">
+
         {filteredMenu.map((menu, idx) => (
-          <div key={idx}>
-            <h3 className="text-xs text-white/70 uppercase mb-2 pl-3 tracking-wider">
+          <div key={idx} className="mb-3">
+
+            {/* Section Title */}
+            <h3
+              className="
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-[#B2A9C9]
+              font-semibold
+              px-3
+              mb-1
+              "
+            >
               {menu.section}
             </h3>
 
-            <ul className="space-y-1">
+            {/* Menu */}
+            <ul className="space-y-0">
+
               {menu.items.map((item, i) => (
                 <li key={i}>
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200
-                      ${
-                        isActive
-                          ? "bg-white/20 backdrop-blur-md text-white shadow-lg"
-                          : "text-white/80 hover:bg-white/10 hover:text-white"
-                      }`
+                      `
+                      flex items-center gap-2.5
+                      px-3 py-[7px]
+                      rounded-md
+                      text-[13px]
+                      font-medium
+                      transition-all duration-200
+
+                      ${isActive
+                        ? `
+                            bg-[#5B3FD6]
+                            text-white
+                          `
+                        : `
+                            text-[#5B5875]
+                            hover:bg-[#E7DDF8]
+                            hover:text-[#5B3FD6]
+                          `
+                      }
+                      `
                     }
                   >
-                    <item.icon className="w-5 h-5 opacity-90" />
+                    <item.icon className="w-4 h-4" />
+
                     <span>{item.name}</span>
                   </NavLink>
                 </li>
               ))}
+
             </ul>
           </div>
         ))}
       </div>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-white/10">
+      {/* ===== FOOTER ===== */}
+      <div className="p-3 border-t border-[#E9E2F3]">
+
+        {/* Promo */}
+        <div
+          className="
+          mb-3
+          rounded-[20px]
+          bg-[#5B3FD6]
+          p-3.5
+          text-white
+          "
+        >
+          <div
+            className="
+            w-7 h-7
+            rounded-lg
+            bg-white/20
+            flex items-center justify-center
+            mb-2.5
+            text-xs
+            "
+          >
+            🔒
+          </div>
+
+          <p className="text-[10px] leading-4 text-white/90">
+            Gain full access to rewards analytics and reports.
+          </p>
+
+          <button
+            className="
+            mt-3
+            w-full
+            py-2
+            rounded-lg
+            bg-white
+            text-[#5B3FD6]
+            text-[11px]
+            font-semibold
+            hover:bg-[#F8F5FC]
+            transition
+            "
+          >
+            Upgrade Plan
+          </button>
+        </div>
+
+        {/* Logout */}
         <button
           onClick={onLogout}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg 
-          bg-white/20 hover:bg-white/30 text-white transition duration-200 backdrop-blur-md"
+          className="
+          w-full
+          flex items-center justify-center gap-2
+          py-2
+          rounded-lg
+          bg-white
+          border border-[#E9E2F3]
+          text-[#E05A74]
+          text-[12px]
+          font-medium
+          hover:bg-[#FFF1F3]
+          transition-all duration-200
+          "
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-4 h-4" />
           Logout
         </button>
       </div>
