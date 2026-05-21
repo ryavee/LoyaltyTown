@@ -1,4 +1,4 @@
-# 🚀 CETRAK Admin Panel
+# 🚀 LoyaltyTown Admin Panel
 
 A modern **Admin Dashboard** for managing customer engagement, QR tracking, rewards, and analytics.
 
