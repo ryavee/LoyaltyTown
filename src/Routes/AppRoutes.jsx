@@ -1,0 +1,268 @@
+// src/Routes/AppRoutes.jsx
+
+import React from "react";
+
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+import AdminLayout from "../Components/Layout/AdminLayout";
+
+
+
+/* =========================================================
+   AUTH PAGES
+========================================================= */
+
+import Login from "../Pages/Login";
+import PrivacyPolicy from "../Pages/PrivacyPolicy";
+
+
+
+/* =========================================================
+   MAIN PAGES
+========================================================= */
+
+import Dashboard from "../Pages/Dashboard";
+
+
+
+/* =========================================================
+   USER MANAGEMENT
+========================================================= */
+
+import AdminUsers from "../Pages/AdminUsers";
+import Customers from "../Pages/Customers";
+import Dealers from "../Pages/Dealers";
+
+
+
+/* =========================================================
+   PRODUCT MANAGEMENT
+========================================================= */
+
+import Products from "../Pages/Products";
+import QRGeneration from "../Pages/QRGeneration";
+import QRTrack from "../Pages/QRTrack";
+import Catalogue from "../Pages/Catalogue";
+import Promotions from "../Pages/Promotions";
+import RedemptionManagement from "../Pages/Redemption";
+
+
+
+/* =========================================================
+   SYSTEM PAGES
+========================================================= */
+
+import Feed from "../Pages/Feed";
+import Announcements from "../Pages/Announcements";
+import ManageTickets from "../Pages/ManageTickets";
+import Settings from "../Pages/Settings";
+
+
+
+/* =========================================================
+   404 PAGE
+========================================================= */
+
+const NotFound = () => {
+  return (
+    <div
+      className="
+      min-h-screen
+      flex flex-col items-center justify-center
+      bg-[#F8F5FC]
+      px-6
+      "
+    >
+      <h1 className="text-6xl font-bold text-[#5B3FD6]">
+        404
+      </h1>
+
+      <p className="mt-3 text-[#8E8AA2] text-lg">
+        Page not found
+      </p>
+
+      <button
+        onClick={() => window.history.back()}
+        className="
+        mt-6
+        px-5 py-2.5
+        rounded-xl
+        bg-[#5B3FD6]
+        hover:bg-[#4B30C5]
+        text-white
+        text-sm
+        font-medium
+        transition-all
+        "
+      >
+        Go Back
+      </button>
+    </div>
+  );
+};
+
+
+
+/* =========================================================
+   ROUTES
+========================================================= */
+
+const AppRoutes = () => {
+  return (
+    <Routes>
+
+      {/* =====================================================
+          PUBLIC ROUTES
+      ===================================================== */}
+
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/privacy-policy"
+        element={<PrivacyPolicy />}
+      />
+
+
+
+      {/* =====================================================
+          ADMIN / PROTECTED ROUTES
+      ===================================================== */}
+
+      <Route element={<AdminLayout />}>
+
+        {/* Dashboard */}
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+
+
+        {/* =================================================
+            USERS
+        ================================================= */}
+
+        <Route
+          path="/factoryUsers"
+          element={<AdminUsers />}
+        />
+
+        <Route
+          path="/customers"
+          element={<Customers />}
+        />
+
+        <Route
+          path="/dealers"
+          element={<Dealers />}
+        />
+
+
+
+        {/* =================================================
+            PRODUCTS
+        ================================================= */}
+
+        <Route
+          path="/products"
+          element={<Products />}
+        />
+
+        <Route
+          path="/qr"
+          element={<QRGeneration />}
+        />
+
+        <Route
+          path="/track"
+          element={<QRTrack />}
+        />
+
+        <Route
+          path="/catalogue"
+          element={<Catalogue />}
+        />
+
+        <Route
+          path="/promotions"
+          element={<Promotions />}
+        />
+
+        <Route
+          path="/redemption"
+          element={<RedemptionManagement />}
+        />
+
+
+
+        {/* =================================================
+            SYSTEM
+        ================================================= */}
+
+        <Route
+          path="/feed"
+          element={<Feed />}
+        />
+
+        <Route
+          path="/announcements"
+          element={<Announcements />}
+        />
+
+        <Route
+          path="/tickets"
+          element={<ManageTickets />}
+        />
+
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
+
+      </Route>
+
+
+
+      {/* =====================================================
+          DEFAULT ROUTE
+      ===================================================== */}
+
+      <Route
+        path="/"
+        element={
+          <Navigate
+            to="/login"
+            replace
+          />
+        }
+      />
+
+
+
+      {/* =====================================================
+          404 PAGE
+      ===================================================== */}
+
+      <Route
+        path="*"
+        element={<NotFound />}
+      />
+
+    </Routes>
+  );
+};
+
+export default AppRoutes;

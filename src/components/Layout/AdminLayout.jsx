@@ -5,7 +5,12 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+
+  // Mobile Sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Desktop Collapse
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -13,42 +18,69 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] text-slate-800">
-      
-      {/* Sidebar */}
+    <div className="flex h-screen bg-[#E9E0F4] text-[#2B2340] overflow-hidden">
+
+      {/* ===== SIDEBAR ===== */}
       <div
-        className={`fixed lg:static inset-y-0 left-0 z-40 transform 
-        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        transition-transform duration-300 ease-in-out`}
+        className={`
+        fixed lg:static inset-y-0 left-0 z-40
+        transform transition-all duration-300 ease-in-out
+
+        ${
+          isSidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        }
+        `}
       >
         <Sidebar
           onLogout={handleLogout}
           onClose={() => setIsSidebarOpen(false)}
+          isCollapsed={isCollapsed}
         />
       </div>
 
-      {/* Overlay (Mobile) */}
+      {/* ===== MOBILE OVERLAY ===== */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 lg:hidden"
+          className="
+          fixed inset-0 z-30 lg:hidden
+          bg-black/30
+          backdrop-blur-[2px]
+          "
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Main Layout */}
-      <div className="flex flex-col flex-1 min-h-screen">
-        
-        {/* Header */}
-        <Header toggleSidebar={() => setIsSidebarOpen(true)} />
+      {/* ===== MAIN LAYOUT ===== */}
+      <div className="flex flex-col flex-1 min-w-0">
 
-        {/* Content Area */}
-        <main className="flex-1 p-6 overflow-y-auto bg-[#F8FAFC]">
-          
-          {/* Inner Wrapper (better spacing & consistency) */}
-          <div className="max-w-7xl mx-auto">
+        {/* ===== HEADER ===== */}
+        <Header
+          toggleSidebar={() => setIsSidebarOpen(true)}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+        />
+
+        {/* ===== CONTENT ===== */}
+        <main
+          className="
+          flex-1
+          overflow-y-auto
+          p-4 md:p-5
+          bg-[#F8F5FC]
+          "
+        >
+          {/* Inner Container */}
+          <div
+            className="
+            w-full
+            max-w-[1600px]
+            mx-auto
+            "
+          >
             <Outlet />
           </div>
-
         </main>
       </div>
     </div>
