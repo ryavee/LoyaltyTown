@@ -29,7 +29,7 @@ A modern **Admin Dashboard** for managing customer engagement, QR tracking, rewa
 
 ```bash
 git clone https://github.com/ryavee/LoyaltyTown.git
-cd cetrak-admin
+cd LoyaltyTown
 npm install
 npm run dev
 Open: http://localhost:5173
