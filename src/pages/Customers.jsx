@@ -451,7 +451,7 @@ const loading = false;
       min-h-screen
       bg-[#F8F5FC]
 
-      p-5
+      px-3 py-3 sm:px-4 sm:py-4
       "
     >
 
@@ -459,14 +459,15 @@ const loading = false;
           HEADER
       ================================================= */}
 
-      <div className="mb-6">
+      <div className="mb-4">
 
         <h1
           className="
-          text-[28px]
+          text-[24px]
+          leading-tight
           font-bold
 
-          text-[#2B2340]
+          text-[#5B3FD6]
           "
         >
           Customers
@@ -474,11 +475,11 @@ const loading = false;
 
         <p
           className="
-          mt-1
+          mt-0.5
 
-          text-sm
+          text-[13px]
 
-          text-[#8E8AA2]
+          text-[#7C7297]
           "
         >
           Manage customers,
@@ -502,9 +503,9 @@ const loading = false;
         sm:grid-cols-2
         xl:grid-cols-4
 
-        gap-4
+        gap-3
 
-        mb-6
+        mb-4
         "
       >
 
@@ -518,21 +519,21 @@ const loading = false;
             }
 
             className={`
-            bg-white/90
+            bg-white/95
             backdrop-blur-md
 
-            rounded-2xl
+            rounded-xl
 
             border
 
-            p-5
+            px-4 py-3.5
 
-            flex items-center gap-4
+            flex items-center gap-3
 
             transition-all duration-200
 
-            hover:-translate-y-1
-            hover:shadow-md
+            hover:-translate-y-0.5
+            hover:shadow-sm
 
             ${
               statusFilter === stat.filter
@@ -544,23 +545,24 @@ const loading = false;
 
             <div
               className={`
-              w-12 h-12
+              w-10 h-10
 
-              rounded-2xl
+              rounded-xl
 
               flex items-center justify-center
 
               ${stat.color}
               `}
             >
-              <stat.icon className="w-5 h-5" />
+              <stat.icon className="w-4 h-4" />
             </div>
 
-            <div className="text-left">
+            <div className="min-w-0 text-left">
 
               <p
                 className="
-                text-[13px]
+                text-[12px]
+                leading-4
 
                 text-[#8E8AA2]
                 "
@@ -570,7 +572,8 @@ const loading = false;
 
               <h3
                 className="
-                text-2xl
+                text-xl
+                leading-6
                 font-bold
 
                 text-[#2B2340]
@@ -594,22 +597,22 @@ const loading = false;
 
       <div
         className="
-        bg-white/90
+        bg-white/95
         backdrop-blur-md
 
-        rounded-2xl
+        rounded-xl
 
         border border-[#E7DFF2]
 
-        p-4
+        p-3
 
         flex flex-col lg:flex-row
         lg:items-center
         lg:justify-between
 
-        gap-4
+        gap-3
 
-        mb-6
+        mb-4
         "
       >
 
@@ -656,9 +659,9 @@ const loading = false;
               className="
               w-full
 
-              pl-10 pr-4 py-2.5
+              pl-10 pr-4 py-2
 
-              rounded-xl
+              rounded-lg
 
               border border-[#E7DFF2]
 
@@ -686,9 +689,9 @@ const loading = false;
             }
 
             className="
-            px-4 py-2.5
+            px-4 py-2
 
-            rounded-xl
+            rounded-lg
 
             border border-[#E7DFF2]
 
@@ -715,9 +718,9 @@ const loading = false;
             onClick={handleResetFilters}
 
             className="
-            px-4 py-2.5
+            px-4 py-2
 
-            rounded-xl
+            rounded-lg
 
             bg-[#5B3FD6]
             hover:bg-[#4C32C7]
@@ -775,10 +778,10 @@ const loading = false;
 
       <div
         className="
-        bg-white/90
+        bg-white/95
         backdrop-blur-md
 
-        rounded-2xl
+        rounded-xl
 
         border border-[#E7DFF2]
 
@@ -791,7 +794,7 @@ const loading = false;
 
           <div
             className="
-            p-16
+            p-12
             text-center
 
             text-[#8E8AA2]
@@ -859,16 +862,16 @@ const loading = false;
                       }
 
                       className="
-                      px-6 py-4
+                      px-5 py-3
 
                       text-left
 
-                      text-[11px]
+                      text-[10.5px]
                       font-semibold
 
                       uppercase
 
-                      tracking-[0.12em]
+                      tracking-[0.1em]
 
                       text-[#8E8AA2]
 
@@ -926,7 +929,7 @@ const loading = false;
                     >
 
                       {/* CUSTOMER */}
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
 
                         <div className="flex items-center gap-3">
 
@@ -937,9 +940,9 @@ const loading = false;
                               alt="profile"
 
                               className="
-                              w-11 h-11
+                              w-10 h-10
 
-                              rounded-2xl
+                              rounded-xl
 
                               object-cover
                               "
@@ -947,9 +950,9 @@ const loading = false;
                           ) : (
                             <div
                               className="
-                              w-11 h-11
+                              w-10 h-10
 
-                              rounded-2xl
+                              rounded-xl
 
                               bg-[#EEE8FF]
 
@@ -996,7 +999,7 @@ const loading = false;
                       </td>
 
                       {/* CONTACT */}
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
 
                         <p
                           className="
@@ -1022,7 +1025,7 @@ const loading = false;
                       </td>
 
                       {/* LOCATION */}
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
 
                         <p
                           className="
@@ -1048,7 +1051,7 @@ const loading = false;
                       </td>
 
                       {/* POINTS */}
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
 
                         <span
                           className="
@@ -1073,7 +1076,7 @@ const loading = false;
                       </td>
 
                       {/* STATUS */}
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
 
                         <div className="flex flex-col gap-1.5">
 
@@ -1150,7 +1153,7 @@ const loading = false;
                       </td>
 
                       {/* ACTION */}
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
 
                         <button
                           onClick={() =>
@@ -1163,7 +1166,7 @@ const loading = false;
 
                           px-4 py-2
 
-                          rounded-xl
+                          rounded-lg
 
                           bg-[#5B3FD6]
                           hover:bg-[#4C32C7]

@@ -35,8 +35,10 @@ const Header = ({ toggleSidebar }) => {
       h-16
       flex items-center justify-between
       px-6
-      bg-[#E5E1F0]
-      border-b border-[#E9E2F3]
+      bg-[#F4F0FB]/95
+      backdrop-blur-md
+      border-b border-[#E1D7F2]
+      shadow-[0_1px_8px_rgba(91,63,214,0.06)]
       "
     >
       {/* ===== LEFT ===== */}
@@ -49,11 +51,11 @@ const Header = ({ toggleSidebar }) => {
           lg:hidden
           p-2
           rounded-xl
-          hover:bg-white/60
+          hover:bg-white
           transition-all duration-200
           "
         >
-          <Menu className="w-5 h-5 text-[#2B2340]" />
+          <Menu className="w-5 h-5 text-[#5B3FD6]" />
         </button>
 
         {/* Title */}
@@ -62,7 +64,7 @@ const Header = ({ toggleSidebar }) => {
             {getTitle()}
           </h1>
 
-          <p className="text-[11px] text-[#8E8AA2] mt-0.5">
+          <p className="text-[11px] text-[#7C7297] mt-0.5">
             Let's check your update today
           </p>
         </div>
@@ -77,11 +79,12 @@ const Header = ({ toggleSidebar }) => {
         w-[320px]
         px-4
         rounded-xl
-        bg-[#F8F5FC]
-        border border-[#E9E2F3]
+        bg-white/85
+        border border-[#E1D7F2]
+        shadow-[0_1px_2px_rgba(43,35,64,0.04)]
         "
       >
-        <Search className="w-4 h-4 text-[#8E8AA2]" />
+        <Search className="w-4 h-4 text-[#7B61E8]" />
 
         <input
           type="text"
@@ -93,7 +96,7 @@ const Header = ({ toggleSidebar }) => {
           outline-none
           text-sm
           text-[#2B2340]
-          placeholder:text-[#AAA6BC]
+          placeholder:text-[#AAA2BE]
           "
         />
       </div>
@@ -107,10 +110,11 @@ const Header = ({ toggleSidebar }) => {
           relative
           w-10 h-10
           rounded-xl
-          bg-[#F8F5FC]
-          border border-[#E9E2F3]
+          bg-white/85
+          border border-[#E1D7F2]
           flex items-center justify-center
           hover:bg-white
+          hover:border-[#CFC0EF]
           transition-all duration-200
           "
         >
@@ -128,7 +132,7 @@ const Header = ({ toggleSidebar }) => {
         </button>
 
         {/* Divider */}
-        <div className="hidden sm:block w-px h-6 bg-[#DCD4EA]"></div>
+        <div className="hidden sm:block w-px h-6 bg-[#D6CBE8]"></div>
 
         {/* Profile */}
         <div
@@ -142,7 +146,7 @@ const Header = ({ toggleSidebar }) => {
               Ravi Raj
             </span>
 
-            <span className="text-[11px] text-[#8E8AA2]">
+            <span className="text-[11px] text-[#7C7297]">
               Super Admin
             </span>
           </div>
@@ -155,6 +159,7 @@ const Header = ({ toggleSidebar }) => {
             rounded-xl
             object-cover
             border border-white
+            shadow-[0_1px_3px_rgba(43,35,64,0.12)]
             "
           />
         </div>
