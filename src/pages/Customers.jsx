@@ -1,7 +1,5 @@
 import React, {
   useState,
-  useContext,
-  useEffect,
   useMemo,
 } from "react";
 
@@ -23,8 +21,6 @@ import {
   MapPin,
 } from "lucide-react";
 
-import toast from "react-hot-toast";
-
 // import { CustomerContext } from "../Context/CustomerContext";
 
 import CustomerDetails from "../components/CustomerDetails";
@@ -34,11 +30,6 @@ import Pagination from "../components/Reusable/Pagination";
 import ExportButton from "../components/ExportButton";
 
 import ImportButton from "../components/ImportButton";
-
-import {
-  getCurrentUserRole,
-  ROLES,
-} from "../utils/rbac";
 
 import LoadingSpinner from "../components/Reusable/LoadingSpinner";
 
@@ -55,12 +46,6 @@ const Customers = () => {
 
   const [resetSpinning, setResetSpinning] =
     useState(false);
-
-  const [actionLoading, setActionLoading] =
-    useState({
-      block: null,
-      kyc: null,
-    });
 
   const [sortConfig, setSortConfig] =
     useState({
@@ -218,16 +203,31 @@ const loading = false;
       )
       .filter((c) => {
 
-        const fullName =
-          `${c.firstName || ""} ${c.lastName || ""}`
-            .trim()
-            .toLowerCase();
+        const searchableValues = [
+          c.uid,
+          c.id,
+          c.customerId,
+          c.referralCode,
+          c.firstName,
+          c.lastName,
+          `${c.firstName || ""} ${c.lastName || ""}`,
+          c.phone,
+          c.mobile,
+          c.email,
+          c.address,
+          c.city,
+          c.district,
+          c.state,
+        ];
 
         const matchesSearch =
           !q ||
-          fullName.includes(q) ||
-          c.phone?.toString().includes(q) ||
-          c.email?.toLowerCase().includes(q);
+          searchableValues.some((value) =>
+            value
+              ?.toString()
+              .toLowerCase()
+              .includes(q)
+          );
 
         const matchesStatus =
           statusFilter === "All" ||
@@ -648,9 +648,10 @@ const loading = false;
 
               value={searchTerm}
 
-              onChange={(e) =>
-                setSearchTerm(e.target.value)
-              }
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
 
               className="
               w-full
