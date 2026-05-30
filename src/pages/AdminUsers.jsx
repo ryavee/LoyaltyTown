@@ -231,21 +231,22 @@ const AdminUsers = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#F8F5FC] p-5">
+    <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
 
-      <div className="max-w-7xl mx-auto">
+      <div>
 
         {/* =====================================================
             HEADER
         ===================================================== */}
 
-        <div className="mb-7">
+        <div className="mb-4">
 
           <h1
             className="
-            text-[28px]
+            text-[24px]
+            leading-tight
             font-bold
-            text-[#2B2340]
+            text-[#5B3FD6]
             "
           >
             Admin Users
@@ -253,9 +254,9 @@ const AdminUsers = () => {
 
           <p
             className="
-            text-sm
-            text-[#8E8AA2]
-            mt-1
+            text-[13px]
+            text-[#7C7297]
+            mt-0.5
             "
           >
             Manage admin accounts and permissions.
@@ -271,9 +272,12 @@ const AdminUsers = () => {
 
         <div
           className="
+          bg-white/95 backdrop-blur-md
+          rounded-xl border border-[#E7DFF2]
+          p-3
           flex flex-col lg:flex-row
           lg:items-center lg:justify-between
-          gap-4 mb-6
+          gap-3 mb-4
           "
         >
 
@@ -281,11 +285,11 @@ const AdminUsers = () => {
           <div className="flex flex-wrap items-center gap-3">
 
             {/* SEARCH */}
-            <div className="relative w-[300px]">
+            <div className="relative w-full sm:w-[300px]">
 
               <Search
                 className="
-                absolute left-3 top-2.5
+                absolute left-3 top-1/2 -translate-y-1/2
                 w-4 h-4
                 text-[#8E8AA2]
                 "
@@ -300,13 +304,13 @@ const AdminUsers = () => {
                 }
                 className="
                 w-full
-                pl-10 pr-4 py-2.5
-                rounded-xl
-                border border-[#E9E2F3]
-                bg-white
+                pl-10 pr-4 py-2
+                rounded-lg
+                border border-[#E7DFF2]
+                bg-[#FAF8FE]
                 text-sm
                 outline-none
-                focus:ring-2 focus:ring-[#5B3FD6]
+                focus:ring-2 focus:ring-[#E7DDF8]
                 "
               />
             </div>
@@ -320,13 +324,13 @@ const AdminUsers = () => {
                 setRoleFilter(e.target.value)
               }
               className="
-              px-3 py-2.5
-              rounded-xl
-              border border-[#E9E2F3]
-              bg-white
+              px-3 py-2
+              rounded-lg
+              border border-[#E7DFF2]
+              bg-[#FAF8FE]
               text-sm
               outline-none
-              focus:ring-2 focus:ring-[#5B3FD6]
+              focus:ring-2 focus:ring-[#E7DDF8]
               "
             >
               <option value="All">
@@ -355,8 +359,8 @@ const AdminUsers = () => {
           <button
             className="
             flex items-center gap-2
-            px-4 py-2.5
-            rounded-xl
+            px-4 py-2
+            rounded-lg
             bg-[#5B3FD6]
             hover:bg-[#4B30C5]
             text-white
@@ -380,10 +384,11 @@ const AdminUsers = () => {
 
         <div
           className="
-          bg-white
-          rounded-[24px]
-          border border-[#E9E2F3]
+          bg-white/95
+          rounded-xl
+          border border-[#E7DFF2]
           overflow-hidden
+          shadow-[0_1px_2px_rgba(43,35,64,0.04)]
           "
         >
 
@@ -397,8 +402,8 @@ const AdminUsers = () => {
 
               <thead
                 className="
-                bg-[#F8F5FC]
-                border-b border-[#E9E2F3]
+                bg-[#F4F0FB]
+                border-b border-[#E7DFF2]
                 "
               >
 
@@ -454,12 +459,12 @@ const AdminUsers = () => {
                           requestSort(sortKey)
                         }
                         className="
-                        px-6 py-4
+                        px-5 py-3
                         text-left
-                        text-[11px]
+                        text-[10.5px]
                         font-semibold
                         uppercase
-                        tracking-wider
+                        tracking-[0.1em]
                         text-[#8E8AA2]
                         "
                       >
@@ -504,14 +509,14 @@ const AdminUsers = () => {
                   <tr
                     key={user.uid}
                     className="
-                    border-b border-[#F3EDF9]
-                    hover:bg-[#F4EEFD]
+                    border-b border-[#F2ECFA]
+                    hover:bg-[#FAF8FE]
                     transition-all
                     "
                   >
 
                     {/* USER */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
 
                       <div
                         className="
@@ -540,7 +545,7 @@ const AdminUsers = () => {
                     {/* PHONE */}
                     <td
                       className="
-                      px-6 py-4
+                      px-5 py-3.5
                       text-sm
                       text-[#5B5875]
                       "
@@ -551,14 +556,14 @@ const AdminUsers = () => {
 
 
                     {/* ROLE */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
                       <RoleBadge role={user.role} />
                     </td>
 
 
 
                     {/* STATUS */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
 
                       <StatusBadge
                         status={
@@ -575,7 +580,7 @@ const AdminUsers = () => {
                     {/* DATE */}
                     <td
                       className="
-                      px-6 py-4
+                      px-5 py-3.5
                       text-sm
                       text-[#5B5875]
                       "
@@ -586,7 +591,7 @@ const AdminUsers = () => {
 
 
                     {/* ACTION */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
 
                       <button
                         className="

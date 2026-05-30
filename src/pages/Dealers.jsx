@@ -328,15 +328,15 @@ const Dealers = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F5FC] p-5">
-      <div className="mb-6">
-        <h1 className="text-[28px] font-bold text-[#2B2340]">Dealers</h1>
-        <p className="mt-1 text-sm text-[#8E8AA2]">
+    <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
+      <div className="mb-4">
+        <h1 className="text-[24px] font-bold leading-tight text-[#5B3FD6]">Dealers</h1>
+        <p className="mt-0.5 text-[13px] text-[#7C7297]">
           Manage dealer onboarding, coverage, and network status.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
         {stats.map((stat) => (
           <button
             key={stat.title}
@@ -345,11 +345,11 @@ const Dealers = () => {
               setCurrentPage(1);
             }}
             className={`
-            bg-white/90 backdrop-blur-md
-            rounded-2xl border p-5
-            flex items-center gap-4
+            bg-white/95 backdrop-blur-md
+            rounded-xl border px-4 py-3.5
+            flex items-center gap-3
             transition-all duration-200
-            hover:-translate-y-1 hover:shadow-md
+            hover:-translate-y-0.5 hover:shadow-sm
             ${
               statusFilter === stat.filter
                 ? "border-[#5B3FD6] ring-2 ring-[#E7DDF8]"
@@ -359,17 +359,17 @@ const Dealers = () => {
           >
             <div
               className={`
-              w-12 h-12 rounded-2xl
+              w-10 h-10 rounded-xl
               flex items-center justify-center
               ${stat.color}
               `}
             >
-              <stat.icon className="w-5 h-5" />
+              <stat.icon className="w-4 h-4" />
             </div>
 
-            <div className="text-left">
-              <p className="text-[13px] text-[#8E8AA2]">{stat.title}</p>
-              <h3 className="text-2xl font-bold text-[#2B2340]">
+            <div className="min-w-0 text-left">
+              <p className="text-[12px] leading-4 text-[#8E8AA2]">{stat.title}</p>
+              <h3 className="text-xl font-bold leading-6 text-[#2B2340]">
                 {stat.value}
               </h3>
             </div>
@@ -379,11 +379,11 @@ const Dealers = () => {
 
       <div
         className="
-        bg-white/90 backdrop-blur-md
-        rounded-2xl border border-[#E7DFF2]
-        p-4 mb-6
+        bg-white/95 backdrop-blur-md
+        rounded-xl border border-[#E7DFF2]
+        p-3 mb-4
         flex flex-col lg:flex-row lg:items-center lg:justify-between
-        gap-4
+        gap-3
         "
       >
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
@@ -395,8 +395,8 @@ const Dealers = () => {
               value={searchTerm}
               onChange={handleSearchChange}
               className="
-              w-full pl-10 pr-4 py-2.5
-              rounded-xl border border-[#E7DFF2]
+              w-full pl-10 pr-4 py-2
+              rounded-lg border border-[#E7DFF2]
               bg-[#FAF8FE]
               text-sm outline-none
               focus:ring-2 focus:ring-[#E7DDF8]
@@ -409,8 +409,8 @@ const Dealers = () => {
             value={statusFilter}
             onChange={handleStatusFilterChange}
             className="
-            px-4 py-2.5
-            rounded-xl border border-[#E7DFF2]
+            px-4 py-2
+            rounded-lg border border-[#E7DFF2]
             bg-[#FAF8FE]
             text-sm outline-none cursor-pointer
             "
@@ -440,7 +440,7 @@ const Dealers = () => {
             onClick={() => setShowAddModal(true)}
             className="
             inline-flex items-center gap-2
-            px-4 py-2.5 rounded-xl
+            px-4 py-2 rounded-lg
             bg-[#5B3FD6] hover:bg-[#4C32C7]
             text-white text-sm font-medium
             transition-all duration-200
@@ -452,9 +452,9 @@ const Dealers = () => {
         </div>
       </div>
 
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-[#E7DFF2] overflow-hidden">
+      <div className="bg-white/95 backdrop-blur-md rounded-xl border border-[#E7DFF2] overflow-hidden shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
         {filteredDealers.length === 0 ? (
-          <div className="p-16 text-center text-[#8E8AA2]">
+          <div className="p-12 text-center text-[#8E8AA2]">
             No dealers found.
           </div>
         ) : (
@@ -468,8 +468,8 @@ const Dealers = () => {
                         key={head.label}
                         onClick={() => requestSort(head.key)}
                         className="
-                        px-6 py-4 text-left
-                        text-[11px] font-semibold uppercase tracking-[0.12em]
+                        px-5 py-3 text-left
+                        text-[10.5px] font-semibold uppercase tracking-[0.1em]
                         text-[#8E8AA2]
                         cursor-pointer
                         "
@@ -496,13 +496,13 @@ const Dealers = () => {
                       key={dealer.id}
                       className="border-b border-[#F2ECFA] hover:bg-[#FAF8FE] transition-all duration-200"
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#EEE8FF] text-[#5B3FD6] text-xs font-semibold">
                           {dealer.dealerId}
                         </span>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <p className="text-sm font-semibold text-[#2B2340]">
                           {dealer.companyName}
                         </p>
@@ -511,7 +511,7 @@ const Dealers = () => {
                         </p>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <p className="text-sm text-[#2B2340]">
                           {dealer.city || "-"}
                         </p>
@@ -520,11 +520,11 @@ const Dealers = () => {
                         </p>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <StatusBadge status={dealer.status} />
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <button
                           type="button"
                           onClick={() => {
@@ -533,7 +533,7 @@ const Dealers = () => {
                           }}
                           className="
                           inline-flex items-center justify-center
-                          w-9 h-9 rounded-xl
+                          w-8 h-8 rounded-lg
                           bg-[#FFEAF1] hover:bg-[#FFDDE7]
                           text-[#E05A74]
                           transition-all duration-200
