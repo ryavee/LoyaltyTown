@@ -27,20 +27,20 @@ import toast from "react-hot-toast";
 
 // import { CustomerContext } from "../Context/CustomerContext";
 
-import CustomerDetails from "../Components/CustomerDetails";
+import CustomerDetails from "../components/CustomerDetails";
 
-import Pagination from "../Components/Reusable/Pagination";
+import Pagination from "../components/Reusable/Pagination";
 
-import ExportButton from "../Components/ExportButton";
+import ExportButton from "../components/ExportButton";
 
-import ImportButton from "../Components/ImportButton";
+import ImportButton from "../components/ImportButton";
 
 import {
   getCurrentUserRole,
   ROLES,
 } from "../utils/rbac";
 
-import LoadingSpinner from "../Components/Reusable/LoadingSpinner";
+import LoadingSpinner from "../components/Reusable/LoadingSpinner";
 
 const Customers = () => {
 
