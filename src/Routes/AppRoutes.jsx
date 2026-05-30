@@ -14,7 +14,7 @@ import {
    LAYOUT
 ========================================================= */
 
-import AdminLayout from "../Components/Layout/AdminLayout";
+import AdminLayout from "../components/Layout/AdminLayout";
 
 
 
