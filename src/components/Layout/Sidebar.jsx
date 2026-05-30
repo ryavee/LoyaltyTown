@@ -212,11 +212,10 @@ const Sidebar = ({
       className={`
       relative
 
-      ${
-        isCollapsed
+      ${isCollapsed
           ? "w-[78px]"
           : "w-[235px]"
-      }
+        }
 
       h-full
       flex flex-col
@@ -292,11 +291,10 @@ const Sidebar = ({
             className={`
             flex items-center
 
-            ${
-              isCollapsed
+            ${isCollapsed
                 ? "justify-center w-full"
                 : "gap-2"
-            }
+              }
             `}
           >
 
@@ -304,10 +302,15 @@ const Sidebar = ({
               src={logo_icon}
               alt="logo"
               className="
-              w-8 h-8
-              rounded-xl
-              object-cover
-              "
+              w-10 h-10
+             object-cover
+             rounded-xl
+             bg-[#5B3FD6]
+             p-0.5
+             border border-white/10
+             shadow-lg
+             shadow-cyan-500/20
+             backdrop-blur-sm"
             />
 
             {!isCollapsed && (
@@ -413,10 +416,9 @@ const Sidebar = ({
                       `
                       flex items-center
 
-                      ${
-                        isCollapsed
-                          ? "justify-center"
-                          : "gap-2.5"
+                      ${isCollapsed
+                        ? "justify-center"
+                        : "gap-2.5"
                       }
 
                       px-3
@@ -429,14 +431,13 @@ const Sidebar = ({
 
                       transition-all duration-200
 
-                      ${
-                        isActive
-                          ? `
+                      ${isActive
+                        ? `
                             bg-[#5B3FD6]
                             text-white
                             shadow-sm
                           `
-                          : `
+                        : `
                             text-[#5B5875]
                             hover:bg-[#E7DDF8]
                             hover:text-[#5B3FD6]
