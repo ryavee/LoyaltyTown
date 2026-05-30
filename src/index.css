@@ -12,8 +12,8 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   
   /* Primary Gradient */
-  --primary-start: #8B3DFF;
-  --primary-end: #00C4CC;
+  --primary-start: #2D2A2E;
+  --primary-end: #B3A08C;
 
   /* Background */
   --bg-main: #F8F9FC;
@@ -33,8 +33,8 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #0f172a; /* slate-900 */
-  color: #e2e8f0; /* slate-200 */
+  background-color: #F8F7FC;
+  color: #2B2340;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -105,19 +105,19 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(59, 130, 246, 0.4); /* blue */
+  background-color: rgba(179, 160, 140, 0.4); /* warm sand */
   border-radius: 9999px;
   transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(59, 130, 246, 0.7);
+  background-color: rgba(179, 160, 140, 0.7);
 }
 
 /* Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+  scrollbar-color: rgba(179, 160, 140, 0.5) transparent;
 }
 
 

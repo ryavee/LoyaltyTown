@@ -31,7 +31,7 @@ import PrivacyPolicy from "../Pages/PrivacyPolicy";
    MAIN PAGES
 ========================================================= */
 
-import Dashboard from "../Pages/Dashboard";
+import Dashboard from "../pages/Dashboard";
 
 
 
@@ -39,9 +39,9 @@ import Dashboard from "../Pages/Dashboard";
    USER MANAGEMENT
 ========================================================= */
 
-import AdminUsers from "../Pages/AdminUsers";
-import Customers from "../Pages/Customers";
-import Dealers from "../Pages/Dealers";
+import AdminUsers from "../pages/AdminUsers";
+import Customers from "../pages/Customers";
+import Dealers from "../pages/Dealers";
 
 
 
@@ -49,12 +49,12 @@ import Dealers from "../Pages/Dealers";
    PRODUCT MANAGEMENT
 ========================================================= */
 
-import Products from "../Pages/Products";
-import QRGeneration from "../Pages/QRGeneration";
-import QRTrack from "../Pages/QRTrack";
-import Catalogue from "../Pages/Catalogue";
-import Promotions from "../Pages/Promotions";
-import RedemptionManagement from "../Pages/Redemption";
+import Products from "../pages/Products";
+import QRGeneration from "../pages/QRGeneration";
+import QRTrack from "../pages/QRTrack";
+import Catalogue from "../pages/Catalogue";
+import Promotions from "../pages/Promotions";
+import RedemptionManagement from "../pages/Redemption";
 
 
 
@@ -62,10 +62,10 @@ import RedemptionManagement from "../Pages/Redemption";
    SYSTEM PAGES
 ========================================================= */
 
-import Feed from "../Pages/Feed";
-import Announcements from "../Pages/Announcements";
-import ManageTickets from "../Pages/ManageTickets";
-import Settings from "../Pages/Settings";
+import Feed from "../pages/Feed";
+import Announcements from "../pages/Announcements";
+import ManageTickets from "../pages/ManageTickets";
+import Settings from "../pages/Settings";
 
 
 
