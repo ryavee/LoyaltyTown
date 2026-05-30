@@ -131,7 +131,7 @@ const Catalogue = () => {
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
       <div className="mb-4">
-        <h1 className="text-[24px] font-bold leading-tight text-[#5B3FD6]">
+        <h1 className="text-[24px] font-extrabold leading-tight text-[#5B3FD6]">
           Catalogue Management
         </h1>
         <p className="mt-0.5 text-[13px] text-[#7C7297]">
