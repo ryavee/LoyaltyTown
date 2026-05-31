@@ -124,8 +124,8 @@ const Header = ({
 
   return (
     <header className="h-16 px-6 bg-transparent flex items-center relative border-b border-[#E7DFF2]">
-      <div className="flex w-full items-center justify-between gap-4">
-        {/* ── LEFT: hamburger + page title ── */}
+      <div className="h-full flex w-full items-center justify-between gap-4">
+                {/* ── LEFT: hamburger + page title ── */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
 
           {/* Mobile hamburger */}
@@ -171,8 +171,8 @@ const Header = ({
                   key={btn}
                   onClick={() => setTimeRange(btn)}
                   className={`rounded-md px-3 py-1 text-[11px] font-bold transition cursor-pointer ${timeRange === btn
-                      ? "bg-[#7C3AED] text-white shadow-sm"
-                      : "text-[#9CA3AF] hover:text-[#7C3AED] hover:bg-[#EDE9FE]"
+                    ? "bg-[#7C3AED] text-white shadow-sm"
+                    : "text-[#9CA3AF] hover:text-[#7C3AED] hover:bg-[#EDE9FE]"
                     }`}
                 >
                   {btn}

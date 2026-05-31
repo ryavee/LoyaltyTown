@@ -1,270 +1,595 @@
-import { useState } from "react";
-import { Menu, Bell, Search, ChevronDown, ArrowLeft } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
-import useDebounce from "../../hooks/useDebounce";
+import { useEffect } from "react";
 
-/* ─────────────────────────────────────────────────────────────
-   PAGE CONFIG — one entry per route
-   title       : shown in header left
-   subtitle    : shown below title (optional)
-   backTo      : if set, shows a back arrow pointing to this path
-   showSearch  : show search bar (dashboard only)
-   showRange   : show 7D / 30D range picker (dashboard only)
-   ───────────────────────────────────────────────────────────── */
-const PAGE_CONFIG = {
-  "/dashboard": {
-    title: "Dashboard",
-    subtitle: "Here's your platform at a glance",
-    showSearch: true,
-    showRange: true,
-  },
-  "/customers": {
-    title: "Customers",
-    subtitle: "Manage users, verify KYC, and monitor loyalty activities",
-  },
-  "/dealers": {
-    title: "Dealers",
-    subtitle: "Manage and monitor your dealer network",
-  },
-  "/factoryUsers": {
-    title: "Admin Users",
-    subtitle: "Manage roles, permissions and admin access",
-  },
-  "/products": {
-    title: "Products",
-    subtitle: "Manage product catalogue, units, and reward point values.",
-  },
-  "/qr": {
-    title: "QR Generation",
-    subtitle: "Create, batch-generate and download QR campaigns",
-  },
-  "/track": {
-    title: "QR Track",
-    subtitle: "Track QR scan events and lifecycle",
-  },
-  "/catalogue": {
-    title: "Catalogue",
-    subtitle: "Browse and manage your product catalogue",
-  },
-  "/campaigns": {
-    title: "QR Campaigns",
-    subtitle: "Create and monitor QR-based campaigns",
-  },
-  "/promotions": {
-    title: "Promotions",
-    subtitle: "Festival bonuses, time-based and point promotions",
-  },
-  "/redemption": {
-    title: "Manage Redemption",
-    subtitle: "Review and process reward redemption requests",
-  },
-  "/feed": {
-    title: "Activity Feed",
-    subtitle: "Real-time platform activity and event log",
-  },
-  "/tickets": {
-    title: "Manage Tickets",
-    subtitle: "View and resolve customer support tickets",
-  },
-  "/announcements": {
-    title: "Announcements",
-    subtitle: "Broadcast messages to customers and dealers",
-  },
-  "/settings": {
-    title: "Settings",
-    subtitle: "Branding, SMTP, API keys and platform configuration",
-  },
-};
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
-/** Match current pathname to a config key, supporting dynamic :id segments */
-const matchConfig = (pathname) => {
-  // exact match first
-  if (PAGE_CONFIG[pathname]) return PAGE_CONFIG[pathname];
+import logo_icon from "../../assets/cetrak-logo.png";
 
-  // dynamic segment match e.g. /customers/ABC123 → /customers/:id
-  for (const key of Object.keys(PAGE_CONFIG)) {
-    if (!key.includes(":")) continue;
-    const regex = new RegExp(
-      "^" + key.replace(/:[^/]+/g, "[^/]+") + "$"
-    );
-    if (regex.test(pathname)) return PAGE_CONFIG[key];
-  }
+import {
+  X,
+  LogOut,
+  LayoutDashboard,
+  Users,
+  Building2,
+  Briefcase,
+  Package,
+  QrCode,
+  MapPin,
+  BookOpen,
+  BadgePercent,
+  Coins,
+  Newspaper,
+  TicketCheck,
+  Megaphone,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
-  return { title: "LoyaltyTown", subtitle: "" };
-};
-
-/* ─────────────────────────────────────────────────────────────
-   HEADER COMPONENT
-   ───────────────────────────────────────────────────────────── */
-const Header = ({
-  toggleSidebar,
+const Sidebar = ({
   onLogout,
-  timeRange = "7D",
-  setTimeRange,
-  searchQuery = "",
-  setSearchQuery,
+  onClose,
+  isCollapsed,
+  setIsCollapsed,
 }) => {
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [rawSearch, setRawSearch] = useState(searchQuery);
-  const location = useLocation();
+
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const userName = "Ravi Raj";
-  const userRole = "Super Admin";
-  const userInitials = "RR";
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // debounced search
-  const debouncedSearch = useDebounce(rawSearch, 300);
-  if (debouncedSearch !== searchQuery && setSearchQuery) {
-    setSearchQuery(debouncedSearch);
+  const role =
+    user?.role ||
+    user?.user?.role ||
+    "Guest";
+
+  /* =====================================================
+      MENU
+  ===================================================== */
+
+  const allMenuItems = [
+    {
+      section: "MAIN",
+
+      items: [
+        {
+          name: "Dashboard",
+          icon: LayoutDashboard,
+          path: "/dashboard",
+        },
+      ],
+    },
+
+    {
+      section: "USERS",
+
+      items: [
+        {
+          name: "Users",
+          icon: Building2,
+          path: "/factoryUsers",
+        },
+
+        {
+          name: "Customers",
+          icon: Users,
+          path: "/customers",
+        },
+
+        {
+          name: "Dealers",
+          icon: Briefcase,
+          path: "/dealers",
+        },
+      ],
+    },
+
+    {
+      section: "PRODUCT",
+
+      items: [
+        {
+          name: "Products",
+          icon: Package,
+          path: "/products",
+        },
+
+        {
+          name: "QR Generation",
+          icon: QrCode,
+          path: "/qr",
+        },
+
+        {
+          name: "QR Track",
+          icon: MapPin,
+          path: "/track",
+        },
+
+        {
+          name: "Catalogue",
+          icon: BookOpen,
+          path: "/catalogue",
+        },
+
+        {
+          name: "Promotions",
+          icon: BadgePercent,
+          path: "/promotions",
+        },
+
+        {
+          name: "Redemption",
+          icon: Coins,
+          path: "/redemption",
+        },
+      ],
+    },
+
+    {
+      section: "SYSTEM",
+
+      items: [
+        {
+          name: "Feed",
+          icon: Newspaper,
+          path: "/feed",
+        },
+
+        {
+          name: "Tickets",
+          icon: TicketCheck,
+          path: "/tickets",
+        },
+
+        {
+          name: "Announcements",
+          icon: Megaphone,
+          path: "/announcements",
+        },
+
+        {
+          name: "Settings",
+          icon: Settings,
+          path: "/settings",
+        },
+      ],
+    },
+  ];
+
+  /* =====================================================
+      ROLE PERMISSIONS
+  ===================================================== */
+
+  const rolePermissions = {
+    Admin: ["*"],
+
+    "Super Admin": ["*"],
+
+    "QR Generate": [
+      "Dealers",
+      "Products",
+      "QR Generation",
+    ],
+  };
+
+  const allowed = rolePermissions[role] || [];
+
+  let filteredMenu = allMenuItems
+    .map((menu) => ({
+      ...menu,
+
+      items: menu.items.filter(
+        (item) =>
+          allowed.includes("*") ||
+          allowed.includes(item.name)
+      ),
+    }))
+    .filter((menu) => menu.items.length > 0);
+
+  if (filteredMenu.length === 0) {
+    filteredMenu = allMenuItems;
   }
 
-  const config = matchConfig(location.pathname);
-  const isDashboard = location.pathname === "/dashboard";
+  /* =====================================================
+      REDIRECT
+  ===================================================== */
+
+  useEffect(() => {
+    if (
+      role === "QR Generate" &&
+      location.pathname === "/dashboard"
+    ) {
+      navigate("/qr", { replace: true });
+    }
+  }, [role, navigate, location.pathname]);
 
   return (
-    <header className="bg-transparent px-6 py-6 relative">
-      <div className="flex w-full items-start justify-between gap-4">
+    <aside
+      className={`
+      relative
 
-        {/* ── LEFT: hamburger + page title ── */}
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+      ${isCollapsed
+          ? "w-[78px]"
+          : "w-[235px]"
+        }
 
-          {/* Mobile hamburger */}
-          <button
-            onClick={toggleSidebar}
-            className="lg:hidden rounded-xl bg-[#F9F7FF] border border-[#DDD6FE] p-2 text-[#7C3AED] hover:bg-[#EDE9FE] transition flex-shrink-0"
+      h-full
+      flex flex-col
+
+      bg-[#F2ECFA]
+
+      border-r border-[#E7DFF2]
+
+      transition-all duration-300
+      `}
+    >
+
+      {/* =================================================
+          FLOATING COLLAPSE BUTTON
+      ================================================= */}
+
+      <button
+        onClick={() =>
+          setIsCollapsed(!isCollapsed)
+        }
+        className="
+        hidden lg:flex
+
+        absolute
+        top-5
+        -right-3
+        z-50
+
+        w-7 h-7
+
+        items-center justify-center
+
+        rounded-xl
+
+        bg-white
+
+        border border-[#E7DFF2]
+
+        shadow-sm
+
+        hover:bg-[#F8F5FC]
+
+        transition-all duration-200
+        "
+      >
+
+        {isCollapsed ? (
+          <ChevronRight className="w-3.5 h-3.5 text-[#6E5AB6]" />
+        ) : (
+          <ChevronLeft className="w-3.5 h-3.5 text-[#6E5AB6]" />
+        )}
+
+      </button>
+
+
+
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
+      <div className="border-b mt-2 border-[#E7DFF2]">
+
+        <div
+          className="
+          h-14
+          px-3
+          flex items-center
+          "
+        >
+
+          {/* LOGO */}
+          <div
+            className={`
+            flex items-center
+
+            ${isCollapsed
+                ? "justify-center w-full"
+                : "gap-2"
+              }
+            `}
           >
-            <Menu className="h-5 w-5" />
-          </button>
 
-          {/* Back button (detail pages) */}
-          {config.backTo && (
-            <button
-              onClick={() => navigate(config.backTo)}
-              className="flex items-center gap-1.5 text-xs font-bold text-[#9CA3AF] hover:text-[#7C3AED] transition flex-shrink-0"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">{config.backLabel || "Back"}</span>
-            </button>
-          )}
+            <img
+              src={logo_icon}
+              alt="logo"
+              className="
+              w-10 h-10
+             object-cover
+             rounded-xl
+             bg-[#5B3FD6]
+             p-0.5
+             border border-white/10
+             shadow-lg
+             shadow-cyan-500/20
+             backdrop-blur-sm"
+            />
 
-          {/* Title + subtitle */}
-          <div className="min-w-0">
-            <h1 className="text-[42px] font-bold text-[#1E1B4B] leading-none">
-              {config.title}
-            </h1>
-            {config.subtitle && (
-              <p className="text-[18px] text-[#6B7280] mt-2">
-                {config.subtitle}
-              </p>
-            )}
-          </div>
-        </div>
+            {!isCollapsed && (
+              <div>
 
-        {/* ── RIGHT: controls ── */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-
-          {/* Date range — dashboard only */}
-          {isDashboard && setTimeRange && (
-            <div className="flex gap-1 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] p-1 hidden md:flex">
-              {["Today", "7D", "30D", "Custom"].map((btn) => (
-                <button
-                  key={btn}
-                  onClick={() => setTimeRange(btn)}
-                  className={`rounded-md px-3 py-1 text-[11px] font-bold transition cursor-pointer ${
-                    timeRange === btn
-                      ? "bg-[#7C3AED] text-white shadow-sm"
-                      : "text-[#9CA3AF] hover:text-[#7C3AED] hover:bg-[#EDE9FE]"
-                  }`}
+                <h2
+                  className="
+                  text-[16px]
+                  font-bold
+                  text-[#5B3FD6]
+                  leading-none
+                  "
                 >
-                  {btn}
-                </button>
-              ))}
-            </div>
-          )}
+                  LoyaltyTown
+                </h2>
 
-          {/* Search — dashboard only */}
-          {isDashboard && (
-            <div className="relative flex items-center gap-2 rounded-lg bg-[#F9F7FF] border border-[#DDD6FE] px-3 py-1.5 hidden md:flex">
-              <Search className="h-3.5 w-3.5 text-[#C4B5FD] flex-shrink-0" />
-              <input
-                type="text"
-                value={rawSearch}
-                onChange={(e) => setRawSearch(e.target.value)}
-                placeholder="Search anything..."
-                className="w-[160px] bg-transparent text-xs font-semibold text-[#1E1B4B] placeholder:text-[#C4B5FD] outline-none"
-              />
-              {rawSearch ? (
-                <button
-                  onClick={() => {
-                    setRawSearch("");
-                    if (setSearchQuery) setSearchQuery("");
-                  }}
-                  className="text-[#A5A1B8] hover:text-[#7C3AED] text-xs font-bold"
+                <p
+                  className="
+                  text-[9px]
+                  text-[#8E8AA2]
+                  mt-0.5
+                  "
                 >
-                  ✕
-                </button>
-              ) : (
-                <span className="rounded bg-[#EDE9FE] px-1.5 py-0.5 text-[9px] font-bold text-[#7C3AED]">
-                  ⌘K
-                </span>
-              )}
-            </div>
-          )}
+                  Rewards Platform
+                </p>
 
-          {/* Live indicator */}
-          <div className="rounded-full bg-[#ECFDF5] border border-[#A7F3D0] px-3 py-1 text-[11px] font-bold text-[#059669] flex items-center gap-1.5">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#10B981]" />
-            </span>
-            <span className="hidden sm:inline">Live</span>
-          </div>
-
-          {/* Notifications */}
-          <button className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#F9F7FF] border border-[#DDD6FE] text-[#9CA3AF] hover:border-[#7C3AED] hover:text-[#7C3AED] transition cursor-pointer">
-            <Bell className="h-4 w-4" />
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#EF4444] text-[9px] font-bold text-white border-2 border-white">
-              3
-            </span>
-          </button>
-
-          {/* User chip */}
-          <div className="relative flex items-center gap-2 rounded-lg bg-[#F9F7FF] border border-[#DDD6FE] px-2.5 py-1">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#7C3AED] to-[#06B6D4] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0">
-              {userInitials}
-            </div>
-            <div className="hidden xl:block">
-              <p className="text-[12px] font-bold text-[#1E1B4B] leading-none">{userName}</p>
-              <p className="text-[10px] text-[#9CA3AF] mt-0.5">{userRole}</p>
-            </div>
-            <button
-              onClick={() => setProfileOpen((p) => !p)}
-              className="text-[#C4B5FD] hover:text-[#7C3AED] transition cursor-pointer"
-            >
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-
-            {/* Dropdown */}
-            {profileOpen && (
-              <div className="absolute right-0 top-10 z-50 w-44 rounded-xl border border-[#EDE9FE] bg-white shadow-lg p-1.5 animate-fadeIn">
-                <div className="px-3 py-2 border-b border-[#F5F3FF] mb-1">
-                  <p className="text-xs font-bold text-[#1E1B4B]">{userName}</p>
-                  <p className="text-[10px] text-[#9CA3AF] mt-0.5">{userRole}</p>
-                </div>
-                <button
-                  onClick={onLogout}
-                  className="w-full text-left rounded-lg px-3 py-2 text-xs font-bold text-[#EF4444] hover:bg-[#FEE2E2] transition cursor-pointer"
-                >
-                  Sign Out
-                </button>
               </div>
             )}
+
           </div>
+
+          {/* MOBILE CLOSE */}
+          <button
+            onClick={onClose}
+            className="
+            lg:hidden
+            ml-auto
+            p-1
+            rounded-md
+            hover:bg-white
+            transition
+            "
+          >
+            <X className="w-4 h-4 text-[#8E8AA2]" />
+          </button>
+
         </div>
+
       </div>
-    </header>
+
+
+
+      {/* =================================================
+          MENU
+      ================================================= */}
+
+      <div
+        className="
+        flex-1
+        overflow-y-auto
+
+        px-2 py-2
+
+        custom-scrollbar
+        "
+      >
+
+        {filteredMenu.map((menu, idx) => (
+          <div
+            key={idx}
+            className="mb-1.5"
+          >
+
+            {/* SECTION TITLE */}
+            {!isCollapsed && (
+              <h3
+                className="
+                text-[9px]
+                uppercase
+                tracking-[0.15em]
+
+                text-[#AAA2BE]
+
+                font-semibold
+
+                px-3
+                mb-1
+                "
+              >
+                {menu.section}
+              </h3>
+            )}
+
+            {/* ITEMS */}
+            <ul className="space-y-0">
+
+              {menu.items.map((item, i) => (
+                <li key={i}>
+
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `
+                      flex items-center
+
+                      ${isCollapsed
+                        ? "justify-center"
+                        : "gap-2.5"
+                      }
+
+                      px-3
+                      py-[8px]
+
+                      rounded-xl
+
+                      text-[12.5px]
+                      font-medium
+
+                      transition-all duration-200
+
+                      ${isActive
+                        ? `
+                            bg-[#5B3FD6]
+                            text-white
+                            shadow-sm
+                          `
+                        : `
+                            text-[#5B5875]
+                            hover:bg-[#E7DDF8]
+                            hover:text-[#5B3FD6]
+                          `
+                      }
+                      `
+                    }
+                  >
+
+                    <item.icon className="w-[17px] h-[17px] min-w-[17px]" />
+
+                    {!isCollapsed && (
+                      <span>{item.name}</span>
+                    )}
+
+                  </NavLink>
+
+                </li>
+              ))}
+
+            </ul>
+
+          </div>
+        ))}
+
+      </div>
+
+
+
+      {/* =================================================
+          FOOTER
+      ================================================= */}
+
+      <div
+        className="
+        p-2.5
+
+        border-t border-[#E7DFF2]
+        "
+      >
+
+        {/* PROMO */}
+        {!isCollapsed && (
+          <div
+            className="
+            mb-2.5
+
+            rounded-[20px]
+
+            bg-[#5B3FD6]
+
+            p-3.5
+
+            text-white
+            "
+          >
+
+            <div
+              className="
+              w-7 h-7
+
+              rounded-lg
+
+              bg-white/20
+
+              flex items-center justify-center
+
+              mb-2.5
+
+              text-sm
+              "
+            >
+              🔒
+            </div>
+
+            <p
+              className="
+              text-[10px]
+              leading-4
+
+              text-white/90
+              "
+            >
+              Gain full access to rewards analytics and reports.
+            </p>
+
+            <button
+              className="
+              mt-3
+
+              w-full
+
+              py-2
+
+              rounded-xl
+
+              bg-white
+
+              text-[#5B3FD6]
+
+              text-[11px]
+              font-semibold
+
+              hover:bg-[#F8F5FC]
+
+              transition
+              "
+            >
+              Upgrade Plan
+            </button>
+
+          </div>
+        )}
+
+        {/* LOGOUT */}
+        <button
+          onClick={onLogout}
+          className="
+          w-full
+
+          flex items-center justify-center
+          gap-2
+
+          py-2
+
+          rounded-xl
+
+          bg-white
+
+          border border-[#E7DFF2]
+
+          text-[#E05A74]
+
+          text-[12px]
+          font-medium
+
+          hover:bg-[#FFF1F3]
+
+          transition-all duration-200
+          "
+        >
+
+          <LogOut className="w-4 h-4" />
+
+          {!isCollapsed && "Logout"}
+
+        </button>
+
+      </div>
+
+    </aside>
   );
 };
 
-export default Header;
+export default Sidebar;
