@@ -32,7 +32,7 @@ const PAGE_CONFIG = {
   },
   "/products": {
     title: "Products",
-    subtitle: "Manage product catalog and SKU tracking",
+    subtitle: "Manage product catalogue, units, and reward point values.",
   },
   "/qr": {
     title: "QR Generation",
@@ -123,9 +123,8 @@ const Header = ({
   const isDashboard = location.pathname === "/dashboard";
 
   return (
-    <header className="bg-transparent px-6 py-6 relative">
-      <div className="flex w-full items-start justify-between gap-4">
-
+    <header className="h-16 px-6 bg-transparent flex items-center relative border-b border-[#E7DFF2]">
+      <div className="flex w-full items-center justify-between gap-4">
         {/* ── LEFT: hamburger + page title ── */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
 
@@ -150,11 +149,11 @@ const Header = ({
 
           {/* Title + subtitle */}
           <div className="min-w-0">
-            <h1 className="text-[42px] font-bold text-[#1E1B4B] leading-none">
+            <h1 className="text-[22px] font-bold text-[#1E1B4B] leading-none">
               {config.title}
             </h1>
             {config.subtitle && (
-              <p className="text-[18px] text-[#6B7280] mt-2">
+              <p className="text-[12px] text-[#6B7280] mt-2">
                 {config.subtitle}
               </p>
             )}
@@ -171,11 +170,10 @@ const Header = ({
                 <button
                   key={btn}
                   onClick={() => setTimeRange(btn)}
-                  className={`rounded-md px-3 py-1 text-[11px] font-bold transition cursor-pointer ${
-                    timeRange === btn
+                  className={`rounded-md px-3 py-1 text-[11px] font-bold transition cursor-pointer ${timeRange === btn
                       ? "bg-[#7C3AED] text-white shadow-sm"
                       : "text-[#9CA3AF] hover:text-[#7C3AED] hover:bg-[#EDE9FE]"
-                  }`}
+                    }`}
                 >
                   {btn}
                 </button>
