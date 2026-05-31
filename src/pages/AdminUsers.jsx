@@ -245,7 +245,7 @@ const AdminUsers = () => {
             className="
             text-[24px]
             leading-tight
-            font-bold
+            font-extrabold
             text-[#5B3FD6]
             "
           >

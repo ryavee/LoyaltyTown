@@ -1,6 +1,11 @@
-// Pagination.jsx
 import React from "react";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 const Pagination = ({
   currentPage,
@@ -8,127 +13,535 @@ const Pagination = ({
   onPageChange,
   pageSize,
   onPageSizeChange,
-  totalItems = null, // optional (for "Showing x-y of z")
-  compact = false, // optional, smaller UI when true
+  totalItems = null,
 }) => {
+
   if (totalPages < 1) {
+
     return (
-      <div className="flex justify-center items-center py-4 text-gray-500 text-sm">
+      <div
+        className="
+        flex items-center justify-center
+
+        py-6
+
+        text-sm
+
+        text-[#8E8AA2]
+        "
+      >
         No records to display.
       </div>
     );
   }
 
-  // builds pages array with ellipses
+  /* =====================================================
+      BUILD PAGE ARRAY
+  ===================================================== */
+
   const buildPages = () => {
+
     const pages = [];
+
     const maxVisible = 5;
-    let start = Math.max(1, currentPage - 2);
-    let end = Math.min(totalPages, start + maxVisible - 1);
-    if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+
+    let start = Math.max(
+      1,
+      currentPage - 2
+    );
+
+    let end = Math.min(
+      totalPages,
+      start + maxVisible - 1
+    );
+
+    if (end - start < maxVisible - 1) {
+
+      start = Math.max(
+        1,
+        end - maxVisible + 1
+      );
+    }
 
     if (start > 1) {
+
       pages.push(1);
-      if (start > 2) pages.push("start-ellipsis");
+
+      if (start > 2) {
+        pages.push("start-ellipsis");
+      }
     }
-    for (let p = start; p <= end; p++) pages.push(p);
+
+    for (
+      let p = start;
+      p <= end;
+      p++
+    ) {
+      pages.push(p);
+    }
+
     if (end < totalPages) {
-      if (end < totalPages - 1) pages.push("end-ellipsis");
+
+      if (end < totalPages - 1) {
+        pages.push("end-ellipsis");
+      }
+
       pages.push(totalPages);
     }
+
     return pages;
   };
 
   const pages = buildPages();
 
-  const firstItemIndex = (currentPage - 1) * pageSize + 1;
-  const lastItemIndex = Math.min(totalItems ?? currentPage * pageSize, (currentPage - 1) * pageSize + pageSize);
+  /* =====================================================
+      RANGE
+  ===================================================== */
+
+  const firstItemIndex =
+    (currentPage - 1) * pageSize + 1;
+
+  const lastItemIndex = Math.min(
+    totalItems ??
+      currentPage * pageSize,
+
+    (currentPage - 1) * pageSize +
+      pageSize
+  );
 
   return (
-    <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-white border border-gray-100 rounded-md`}>
-      {/* left: rows per page + range */}
-      <div className="flex items-center gap-3 text-sm text-gray-600">
+    <div
+      className="
+      flex flex-col
+      lg:flex-row
+
+      lg:items-center
+      lg:justify-between
+
+      gap-4
+
+      px-5 py-4
+
+      bg-[#FAF8FE]
+
+      border-t border-[#E7DFF2]
+      "
+    >
+
+      {/* =================================================
+          LEFT SECTION
+      ================================================= */}
+
+      <div
+        className="
+        flex flex-col
+        sm:flex-row
+
+        sm:items-center
+
+        gap-3
+
+        text-sm
+        "
+      >
+
+        {/* ROWS */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Rows:</span>
+
+          <span className="text-[#8E8AA2]">
+            Rows:
+          </span>
+
           <select
             value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="border px-2 py-1 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+
+            onChange={(e) =>
+              onPageSizeChange(
+                Number(e.target.value)
+              )
+            }
+
+            className="
+            px-3 py-2
+
+            rounded-xl
+
+            border border-[#E7DFF2]
+
+            bg-white
+
+            text-sm
+
+            text-[#2B2340]
+
+            outline-none
+
+            focus:ring-2
+            focus:ring-[#E7DDF8]
+            "
           >
-            {[5, 10, 20, 30, 50].map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
+
+            {[5, 10, 20, 30, 50].map(
+              (size) => (
+                <option
+                  key={size}
+                  value={size}
+                >
+                  {size}
+                </option>
+              )
+            )}
+
           </select>
+
         </div>
 
+        {/* RANGE */}
         {totalItems != null && (
-          <div className="text-xs text-gray-500">
-            Showing <strong className="text-gray-700">{firstItemIndex}</strong>–<strong className="text-gray-700">{lastItemIndex}</strong> of <strong className="text-gray-700">{totalItems}</strong>
+
+          <div
+            className="
+            text-[#8E8AA2]
+
+            text-sm
+            "
+          >
+
+            Showing
+            {" "}
+
+            <span
+              className="
+              font-semibold
+              text-[#2B2340]
+              "
+            >
+              {firstItemIndex}
+            </span>
+
+            {" "}–{" "}
+
+            <span
+              className="
+              font-semibold
+              text-[#2B2340]
+              "
+            >
+              {lastItemIndex}
+            </span>
+
+            {" "}of{" "}
+
+            <span
+              className="
+              font-semibold
+              text-[#2B2340]
+              "
+            >
+              {totalItems}
+            </span>
+
           </div>
         )}
+
       </div>
 
-      {/* center: page buttons */}
-      <div className="flex items-center gap-1">
+
+
+      {/* =================================================
+          PAGINATION BUTTONS
+      ================================================= */}
+
+      <div
+        className="
+        flex items-center
+
+        gap-1.5
+        "
+      >
+
+        {/* FIRST */}
         <button
-          onClick={() => onPageChange(1)}
+          onClick={() =>
+            onPageChange(1)
+          }
+
           disabled={currentPage === 1}
-          aria-label="First page"
-          className={`p-1 rounded-md ${currentPage === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-50"}`}
+
+          className={`
+          w-9 h-9
+
+          rounded-xl
+
+          flex items-center justify-center
+
+          transition-all duration-200
+
+          ${
+            currentPage === 1
+              ? `
+                opacity-40
+                cursor-not-allowed
+                bg-white
+              `
+              : `
+                bg-white
+                hover:bg-[#EEE8FF]
+              `
+          }
+          `}
         >
-          <ChevronsLeft className="w-4 h-4 text-gray-600" />
+
+          <ChevronsLeft
+            className="
+            w-4 h-4
+
+            text-[#5B3FD6]
+            "
+          />
+
         </button>
 
+
+
+        {/* PREVIOUS */}
         <button
-          onClick={() => onPageChange(currentPage - 1)}
+          onClick={() =>
+            onPageChange(currentPage - 1)
+          }
+
           disabled={currentPage === 1}
-          aria-label="Previous page"
-          className={`p-1 rounded-md ${currentPage === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-50"}`}
+
+          className={`
+          w-9 h-9
+
+          rounded-xl
+
+          flex items-center justify-center
+
+          transition-all duration-200
+
+          ${
+            currentPage === 1
+              ? `
+                opacity-40
+                cursor-not-allowed
+                bg-white
+              `
+              : `
+                bg-white
+                hover:bg-[#EEE8FF]
+              `
+          }
+          `}
         >
-          <ChevronLeft className="w-4 h-4 text-gray-600" />
+
+          <ChevronLeft
+            className="
+            w-4 h-4
+
+            text-[#5B3FD6]
+            "
+          />
+
         </button>
 
+
+
+        {/* PAGE NUMBERS */}
         {pages.map((p, i) =>
-          p === "start-ellipsis" || p === "end-ellipsis" ? (
-            <span key={p + i} className="px-3 py-1 text-sm text-gray-400">
+
+          p === "start-ellipsis" ||
+          p === "end-ellipsis" ? (
+
+            <span
+              key={p + i}
+
+              className="
+              px-2
+
+              text-[#AAA2BE]
+              "
+            >
               …
             </span>
+
           ) : (
+
             <button
               key={p}
-              onClick={() => onPageChange(p)}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${p === currentPage ? "bg-orange-600 text-white" : "bg-white text-gray-700 border hover:bg-orange-50"}`}
+
+              onClick={() =>
+                onPageChange(p)
+              }
+
+              className={`
+              min-w-[36px]
+              h-9
+
+              px-3
+
+              rounded-xl
+
+              text-sm
+              font-semibold
+
+              transition-all duration-200
+
+              ${
+                p === currentPage
+                  ? `
+                    bg-[#5B3FD6]
+                    text-white
+                    shadow-sm
+                  `
+                  : `
+                    bg-white
+                    text-[#2B2340]
+
+                    hover:bg-[#EEE8FF]
+                  `
+              }
+              `}
             >
               {p}
             </button>
           )
         )}
 
+
+
+        {/* NEXT */}
         <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          aria-label="Next page"
-          className={`p-1 rounded-md ${currentPage === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-50"}`}
+          onClick={() =>
+            onPageChange(currentPage + 1)
+          }
+
+          disabled={
+            currentPage === totalPages
+          }
+
+          className={`
+          w-9 h-9
+
+          rounded-xl
+
+          flex items-center justify-center
+
+          transition-all duration-200
+
+          ${
+            currentPage === totalPages
+              ? `
+                opacity-40
+                cursor-not-allowed
+                bg-white
+              `
+              : `
+                bg-white
+                hover:bg-[#EEE8FF]
+              `
+          }
+          `}
         >
-          <ChevronRight className="w-4 h-4 text-gray-600" />
+
+          <ChevronRight
+            className="
+            w-4 h-4
+
+            text-[#5B3FD6]
+            "
+          />
+
         </button>
 
+
+
+        {/* LAST */}
         <button
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
-          aria-label="Last page"
-          className={`p-1 rounded-md ${currentPage === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-50"}`}
+          onClick={() =>
+            onPageChange(totalPages)
+          }
+
+          disabled={
+            currentPage === totalPages
+          }
+
+          className={`
+          w-9 h-9
+
+          rounded-xl
+
+          flex items-center justify-center
+
+          transition-all duration-200
+
+          ${
+            currentPage === totalPages
+              ? `
+                opacity-40
+                cursor-not-allowed
+                bg-white
+              `
+              : `
+                bg-white
+                hover:bg-[#EEE8FF]
+              `
+          }
+          `}
         >
-          <ChevronsRight className="w-4 h-4 text-gray-600" />
+
+          <ChevronsRight
+            className="
+            w-4 h-4
+
+            text-[#5B3FD6]
+            "
+          />
+
         </button>
+
       </div>
 
-      {/* right: compact page info */}
-      <div className="text-sm text-gray-600">
-        Page <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+
+
+      {/* =================================================
+          PAGE INFO
+      ================================================= */}
+
+      <div
+        className="
+        text-sm
+
+        text-[#8E8AA2]
+        "
+      >
+
+        Page
+        {" "}
+
+        <span
+          className="
+          font-semibold
+          text-[#2B2340]
+          "
+        >
+          {currentPage}
+        </span>
+
+        {" "}of{" "}
+
+        <span
+          className="
+          font-semibold
+          text-[#2B2340]
+          "
+        >
+          {totalPages}
+        </span>
+
       </div>
+
     </div>
   );
 };
