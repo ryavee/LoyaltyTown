@@ -23,15 +23,15 @@ import {
 
 // import { CustomerContext } from "../Context/CustomerContext";
 
-import CustomerDetails from "../components/CustomerDetails";
+import CustomerDetails from "../Components/CustomerDetails";
 
-import Pagination from "../components/Reusable/Pagination";
+import Pagination from "../Components/Reusable/Pagination";
 
-import ExportButton from "../components/ExportButton";
+import ExportButton from "../Components/ExportButton";
 
-import ImportButton from "../components/ImportButton";
+import ImportButton from "../Components/ImportButton";
 
-import LoadingSpinner from "../components/Reusable/LoadingSpinner";
+import LoadingSpinner from "../Components/Reusable/LoadingSpinner";
 
 const Customers = () => {
 
@@ -446,14 +446,7 @@ const loading = false;
   ];
 
   return (
-    <div
-      className="
-      min-h-screen
-      bg-[#F8F5FC]
-
-      px-3 py-3 sm:px-4 sm:py-4
-      "
-    >
+    <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
 
       {/* =================================================
           HEADER
@@ -465,7 +458,7 @@ const loading = false;
           className="
           text-[24px]
           leading-tight
-          font-bold
+          font-extrabold
 
           text-[#5B3FD6]
           "

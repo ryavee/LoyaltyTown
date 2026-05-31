@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-import ExportButton from "../components/ExportButton";
-import ImportButton from "../components/ImportButton";
-import Pagination from "../components/Reusable/Pagination";
+import ExportButton from "../Components/ExportButton";
+import ImportButton from "../Components/ImportButton";
+import Pagination from "../Components/Reusable/Pagination";
 import { getCurrentUserRole, ROLES } from "../utils/rbac";
 
 const initialProducts = [
@@ -253,12 +253,12 @@ const Products = () => {
           currentProducts.map((product) =>
             product.id === editingProductId
               ? {
-                  ...product,
-                  productId,
-                  productName,
-                  productUnit,
-                  productPoint,
-                }
+                ...product,
+                productId,
+                productName,
+                productUnit,
+                productPoint,
+              }
               : product
           )
         );
@@ -338,7 +338,7 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
       <div className="mb-4">
-        <h1 className="text-[24px] font-bold leading-tight text-[#5B3FD6]">
+        <h1 className="text-[24px] font-extrabold leading-tight text-[#5B3FD6]">
           Products
         </h1>
         <p className="mt-0.5 text-[13px] text-[#7C7297]">
@@ -508,17 +508,19 @@ const Products = () => {
             </div>
 
             <div className="bg-[#FAF8FE] border-t border-[#E7DFF2]">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                pageSize={pageSize}
-                onPageSizeChange={(size) => {
-                  setPageSize(size);
-                  setCurrentPage(1);
-                }}
-                totalItems={sortedProducts.length}
-              />
+              <div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  pageSize={pageSize}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
+                  totalItems={sortedProducts.length}
+                />
+              </div>
             </div>
           </>
         )}

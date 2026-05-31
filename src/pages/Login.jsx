@@ -1,6 +1,6 @@
 const Login = () => {
   return (
-    <div className="text-3xl font-bold p-10">
+    <div className="text-3xl font-extrabold p-10">
       Login Page
     </div>
   );
