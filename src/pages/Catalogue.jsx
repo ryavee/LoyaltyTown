@@ -6,11 +6,13 @@ import {
   Loader,
   Plus,
   Search,
-  Trash2,
   Upload,
   X,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+
+import ActionButtons from "../Components/Reusable/ActionButtons";
+import ConfirmationModal from "../Components/ConfirmationModal";
 
 const initialCatalogues = [
   {
@@ -130,15 +132,6 @@ const Catalogue = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
-      <div className="mb-4">
-        <h1 className="text-[24px] font-extrabold leading-tight text-[#5B3FD6]">
-          Catalogue Management
-        </h1>
-        <p className="mt-0.5 text-[13px] text-[#7C7297]">
-          Create, organize, and manage product PDF catalogues.
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         {[
           {
@@ -247,13 +240,7 @@ const Catalogue = () => {
                   >
                     <Eye className="w-4 h-4" />
                   </a>
-                  <button
-                    onClick={() => setCatalogueToDelete(catalogue)}
-                    className="w-8 h-8 rounded-lg bg-[#FFEAF1] hover:bg-[#FFDDE7] text-[#E05A74] flex items-center justify-center"
-                    title="Delete catalogue"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <ActionButtons onDelete={() => setCatalogueToDelete(catalogue)} />
                 </div>
               </div>
             </div>
@@ -412,37 +399,17 @@ const Catalogue = () => {
         </div>
       )}
 
-      {catalogueToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl bg-white border border-[#E7DFF2] shadow-xl p-6">
-            <h2 className="text-lg font-semibold text-[#5B3FD6]">
-              Delete Catalogue
-            </h2>
-            <p className="mt-2 text-sm text-[#7C7297]">
-              Are you sure you want to delete{" "}
-              <span className="font-medium text-[#2B2340]">
-                {catalogueToDelete.name}
-              </span>
-              ?
-            </p>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setCatalogueToDelete(null)}
-                className="px-4 py-2 rounded-lg bg-[#F4F0FB] hover:bg-[#EEE8FF] text-[#5B3FD6] text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteCatalogue}
-                className="px-4 py-2 rounded-lg bg-[#E05A74] hover:bg-[#D84B66] text-white text-sm font-medium"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={!!catalogueToDelete}
+        title="Delete Catalogue"
+        message={`Are you sure you want to delete "${
+          catalogueToDelete?.name || "this catalogue"
+        }"?`}
+        onConfirm={handleDeleteCatalogue}
+        onCancel={() => setCatalogueToDelete(null)}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

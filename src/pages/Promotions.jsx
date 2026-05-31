@@ -13,13 +13,13 @@ import {
   Search,
   Star,
   Tag,
-  Trash2,
   X,
-  Pencil,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import ExportButton from "../Components/ExportButton";
+import ActionButtons from "../Components/Reusable/ActionButtons";
+import ConfirmationModal from "../Components/ConfirmationModal";
 import Pagination from "../Components/Reusable/Pagination";
 
 const products = [
@@ -378,15 +378,6 @@ const Promotions = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
-      <div className="mb-4">
-        <h1 className="text-[24px] font-extrabold leading-tight text-[#5B3FD6]">
-          Promotions
-        </h1>
-        <p className="mt-0.5 text-[13px] text-[#7C7297]">
-          Manage bonus points, offers, and promotional rewards.
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
         {stats.map((stat) => (
           <div
@@ -529,20 +520,11 @@ const Promotions = () => {
                         <StatusBadge active={promotion.active} />
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleEditPromotion(promotion)}
-                            className="w-8 h-8 rounded-lg bg-[#EEE8FF] hover:bg-[#E7DDF8] text-[#5B3FD6] flex items-center justify-center"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => setPromotionToDelete(promotion)}
-                            className="w-8 h-8 rounded-lg bg-[#FFEAF1] hover:bg-[#FFDDE7] text-[#E05A74] flex items-center justify-center"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <ActionButtons
+                          onEdit={() => handleEditPromotion(promotion)}
+                          onDelete={() => setPromotionToDelete(promotion)}
+                          disableAll={saving}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -756,33 +738,15 @@ const Promotions = () => {
         </div>
       )}
 
-      {promotionToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl bg-white border border-[#E7DFF2] shadow-xl p-6">
-            <h2 className="text-lg font-semibold text-[#5B3FD6]">
-              Delete Promotion
-            </h2>
-            <p className="mt-2 text-sm text-[#7C7297]">
-              Are you sure you want to delete this promotion?
-            </p>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setPromotionToDelete(null)}
-                className="px-4 py-2 rounded-lg bg-[#F4F0FB] hover:bg-[#EEE8FF] text-[#5B3FD6] text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeletePromotion}
-                className="px-4 py-2 rounded-lg bg-[#E05A74] hover:bg-[#D84B66] text-white text-sm font-medium"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={!!promotionToDelete}
+        title="Delete Promotion"
+        message="Are you sure you want to delete this promotion?"
+        onConfirm={handleDeletePromotion}
+        onCancel={() => setPromotionToDelete(null)}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

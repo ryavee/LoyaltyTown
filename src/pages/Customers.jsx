@@ -449,43 +449,6 @@ const loading = false;
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
 
       {/* =================================================
-          HEADER
-      ================================================= */}
-
-      <div className="mb-4">
-
-        <h1
-          className="
-          text-[24px]
-          leading-tight
-          font-extrabold
-
-          text-[#5B3FD6]
-          "
-        >
-          Customers
-        </h1>
-
-        <p
-          className="
-          mt-0.5
-
-          text-[13px]
-
-          text-[#7C7297]
-          "
-        >
-          Manage customers,
-          loyalty activity,
-          KYC verification
-          and account status.
-        </p>
-
-      </div>
-
-
-
-      {/* =================================================
           STATS
       ================================================= */}
 

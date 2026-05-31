@@ -1,357 +1,474 @@
-import React, {
-  useState,
-  useMemo,
-  useEffect,
-} from "react";
-import { Plus, Trash2, Notebook, Calendar, Flag, AlignLeft, MoreVertical, Search } from 'lucide-react';
-import Modal from "../Components/Reusable/Modal";
-import AnnouncementForm from "../Components/AnnouncementForm";
-// import { AnnouncementContext } from "../Context/AnnouncementContext";
-import LoadingSpinner from "../Components/Reusable/LoadingSpinner";
-import Pagination from "../Components/Reusable/Pagination";
-import ConfirmationModal from "../Components/ConfirmationModal";
+import React, { useMemo, useState } from "react";
+import {
+  AlignLeft,
+  Calendar,
+  Flag,
+  Megaphone,
+  MoreVertical,
+  Notebook,
+  Plus,
+  Search,
+  X,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
-const Announcements = () => {
- const announcements = [
+import ActionButtons from "../Components/Reusable/ActionButtons";
+import ConfirmationModal from "../Components/ConfirmationModal";
+import Pagination from "../Components/Reusable/Pagination";
+
+const initialAnnouncements = [
   {
-    id: 1,
+    id: "ANN1001",
     title: "New Reward Campaign",
-    message:
-      "Customers can now earn double points on every purchase this weekend.",
+    message: "Customers can now earn double points on every purchase this weekend.",
     target: "All Users",
     priority: "High",
-    date: "12 Aug 2026",
+    date: "2026-08-12",
   },
-
   {
-    id: 2,
+    id: "ANN1002",
     title: "Referral Bonus",
-    message:
-      "Invite friends and get 500 bonus loyalty points instantly.",
+    message: "Invite friends and get 500 bonus loyalty points instantly.",
     target: "Customers",
     priority: "Medium",
-    date: "10 Aug 2026",
+    date: "2026-08-10",
   },
-
   {
-    id: 3,
+    id: "ANN1003",
     title: "System Maintenance",
-    message:
-      "Platform will remain under maintenance from 2AM to 4AM.",
+    message: "Platform will remain under maintenance from 2AM to 4AM.",
     target: "Dealers",
     priority: "Low",
-    date: "08 Aug 2026",
+    date: "2026-08-08",
   },
 ];
 
-const loading = false;
+const emptyAnnouncement = {
+  title: "",
+  message: "",
+  target: "All Users",
+  priority: "Normal",
+  date: "",
+};
 
-const createLoading = false;
+const priorityStyles = {
+  High: "bg-[#FFEAF1] text-[#E05A74]",
+  Medium: "bg-[#FFF4E5] text-[#F59E0B]",
+  Low: "bg-[#E8F0FF] text-[#4F7CFF]",
+  Normal: "bg-[#F4F0FB] text-[#8E8AA2]",
+};
 
-const deleteLoading = false;
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
-const createNewAnnouncement =
-  async (data) => {
-
-    console.log(
-      "Created Announcement:",
-      data
-    );
-  };
-
-const deleteAnnouncement =
-  async (id) => {
-
-    console.log(
-      "Deleted Announcement:",
-      id
-    );
-  };
-
+const Announcements = () => {
+  const [announcements, setAnnouncements] = useState(initialAnnouncements);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+  const [formData, setFormData] = useState(emptyAnnouncement);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filteredAnnouncements = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
-    if (!q) return announcements || [];
 
-    return (announcements || []).filter((a) => {
-      return (
-        (a.title || "").toLowerCase().includes(q) ||
-        (a.message || "").toLowerCase().includes(q) ||
-        (a.target || "").toLowerCase().includes(q) ||
-        (a.priority || "").toLowerCase().includes(q)
-      );
-    });
+    return announcements.filter((announcement) =>
+      [
+        announcement.id,
+        announcement.title,
+        announcement.message,
+        announcement.target,
+        announcement.priority,
+      ].some((value) => value?.toString().toLowerCase().includes(q))
+    );
   }, [announcements, searchTerm]);
 
-  // Pagination (client-side)
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const pageSizeOptions = [10, 25, 50];
-  const totalPages = Math.max(1, Math.ceil((filteredAnnouncements?.length || 0) / pageSize));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredAnnouncements.length / pageSize)
+  );
+  const paginatedAnnouncements = filteredAnnouncements.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
-  const paginatedAnnouncements = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return (filteredAnnouncements || []).slice(start, start + pageSize);
-  }, [filteredAnnouncements, currentPage, pageSize]);
+  const highPriority = announcements.filter(
+    (announcement) => announcement.priority === "High"
+  ).length;
+  const customerTargeted = announcements.filter(
+    (announcement) => announcement.target === "Customers"
+  ).length;
+  const dealerTargeted = announcements.filter(
+    (announcement) => announcement.target === "Dealers"
+  ).length;
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
-  // open add modal
-  const handleHeaderAdd = () => {
-    setSelectedAnnouncement(null);
-    setIsModalOpen(true);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
   };
 
-  const handleFormSubmit = async (formData) => {
-    try {
-      await createNewAnnouncement(formData);
-      setIsModalOpen(false);
-      setCurrentPage(1);
-    } catch (error) {
-      console.error("Failed to create announcement:", error);
+  const handleCreateAnnouncement = () => {
+    if (!formData.title.trim() || !formData.message.trim()) {
+      toast.error("Title and message are required");
+      return;
     }
-  };
 
-  const handleOpenEdit = (announcement) => {
-    setSelectedAnnouncement(announcement);
-    setIsModalOpen(true);
-  };
-
-  const handleInitiateDelete = (announcement) => {
-    setSelectedAnnouncement(announcement);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!selectedAnnouncement) return;
-    try {
-      await deleteAnnouncement(selectedAnnouncement.id);
-      setIsDeleteModalOpen(false);
-      setSelectedAnnouncement(null);
-      // adjust page if we removed the last item on page
-      if ((paginatedAnnouncements.length === 1) && currentPage > 1) {
-        setCurrentPage((p) => p - 1);
-      }
-    } catch (error) {
-      console.error("Failed to delete announcement:", error);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setIsDeleteModalOpen(false);
-    setSelectedAnnouncement(null);
-  };
-
-  const handleCloseModal = () => {
+    setAnnouncements((current) => [
+      {
+        ...formData,
+        id: `ANN${Date.now().toString().slice(-4)}`,
+        date: formData.date || new Date().toISOString().split("T")[0],
+      },
+      ...current,
+    ]);
+    setFormData(emptyAnnouncement);
     setIsModalOpen(false);
-    setSelectedAnnouncement(null);
+    setCurrentPage(1);
+    toast.success("Announcement created successfully");
   };
 
-  if (loading) {
-    return <LoadingSpinner centered message="Loading Announcements..." />;
-  }
+  const handleDeleteAnnouncement = () => {
+    if (!announcementToDelete) return;
+
+    setAnnouncements((current) =>
+      current.filter(
+        (announcement) => announcement.id !== announcementToDelete.id
+      )
+    );
+    setAnnouncementToDelete(null);
+    toast.success("Announcement deleted successfully");
+  };
+
+  const stats = [
+    {
+      title: "Announcements",
+      value: announcements.length,
+      icon: Megaphone,
+      color: "bg-[#EEE8FF] text-[#5B3FD6]",
+    },
+    {
+      title: "High Priority",
+      value: highPriority,
+      icon: Flag,
+      color: "bg-[#FFEAF1] text-[#E05A74]",
+    },
+    {
+      title: "Customers",
+      value: customerTargeted,
+      icon: Notebook,
+      color: "bg-[#EAFBF2] text-[#36B37E]",
+    },
+    {
+      title: "Dealers",
+      value: dealerTargeted,
+      icon: Calendar,
+      color: "bg-[#E8F0FF] text-[#4F7CFF]",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header: title + Add button */}
-        <div className="mb-4">
-
-          <h1 className="text-[24px] leading-tight font-extrabold text-[#5B3FD6]">
-            <span>Announcements</span>
-            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded bg-[#00A9A3]/10 text-[#00A9A3] border border-[#00A9A3]/20">
-              {announcements?.length || 0}
-            </span>
-          </h1>
-          <p className="mt-0.5 text-[13px] text-[#7C7297] ">
-            Manage announcements shown to users
-          </p>
-        </div>
-
-      
-
-        {/* Filters  and add buttons*/}
-        <div className="flex flex-col sm:flex-row items-center gap-3 mb-6 justify-between">
-          <div className="relative flex-1 max-w-sm w-full">
-            <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by title or message..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm shadow-sm transition-all"
-            />
-          </div>
-
-
-          <button
-            onClick={handleHeaderAdd}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold 
-                          text-white bg-[#00A9A3] rounded-lg hover:bg-[#128083] 
-                          shadow-sm hover:shadow-md transition-all cursor-pointer"            >
-            <Plus className="w-4 h-4" />
-            Add Announcement
-          </button>
-
-        </div>
-
-        {/* Table container */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {filteredAnnouncements.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              {searchTerm ? "No results found." : "No announcements found."}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
+        {stats.map((stat) => (
+          <div
+            key={stat.title}
+            className="bg-white/95 rounded-xl border border-[#E7DFF2] px-4 py-3.5 flex items-center gap-3 shadow-[0_1px_2px_rgba(43,35,64,0.04)]"
+          >
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.color}`}
+            >
+              <stat.icon className="w-4 h-4" />
             </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center gap-1">
-                          <Notebook className="h-4 w-4" /> Title
+            <div>
+              <p className="text-[12px] leading-4 text-[#8E8AA2]">
+                {stat.title}
+              </p>
+              <h3 className="text-xl font-bold leading-6 text-[#2B2340]">
+                {stat.value}
+              </h3>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white/95 rounded-xl border border-[#E7DFF2] p-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#AAA2BE]" />
+          <input
+            type="text"
+            placeholder="Search title, message, target or priority..."
+            value={searchTerm}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8]"
+          />
+        </div>
+
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#5B3FD6] hover:bg-[#4C32C7] text-white text-sm font-medium"
+        >
+          <Plus className="w-4 h-4" />
+          Add Announcement
+        </button>
+      </div>
+
+      <div className="bg-white/95 rounded-xl border border-[#E7DFF2] overflow-hidden shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
+        {filteredAnnouncements.length === 0 ? (
+          <div className="p-12 text-center text-[#8E8AA2]">
+            No announcements found.
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-[#F4F0FB] border-b border-[#E7DFF2]">
+                  <tr>
+                    {[
+                      { label: "Title", icon: Notebook },
+                      { label: "Date", icon: Calendar },
+                      { label: "Priority", icon: Flag },
+                      { label: "Description", icon: AlignLeft },
+                      { label: "Action", icon: MoreVertical },
+                    ].map((head) => (
+                      <th
+                        key={head.label}
+                        className="px-5 py-3 text-left text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#8E8AA2]"
+                      >
+                        <div className="flex items-center gap-2 whitespace-nowrap">
+                          <head.icon className="w-4 h-4" />
+                          <span>{head.label}</span>
                         </div>
                       </th>
-
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" /> Date
-                        </div>
-                      </th>
-
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center gap-1">
-                          <Flag className="h-4 w-4" /> Priority
-                        </div>
-                      </th>
-
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center gap-1">
-                          <AlignLeft className="h-4 w-4" /> Description
-                        </div>
-                      </th>
-
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center gap-1">
-                          <MoreVertical className="h-4 w-4" /> Action
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedAnnouncements.map((a) => (
-                      <tr key={a.id || a._id || a.title} className="hover:bg-[#FFFAF3] transition-all">
-                        {/* Title */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{a.title}</div>
-                          <div className="text-xs text-gray-500 mt-1">{a.target || "All users"}</div>
-                        </td>
-
-                        {/* Date */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-700">{a.date || "-"}</div>
-                        </td>
-
-                        {/* Priority */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-700">{a.priority || "Normal"}</div>
-                        </td>
-
-                        {/* Description */}
-                        <td className="px-6 py-4 whitespace-nowrap max-w-[36rem]">
-                          <p className="text-sm text-gray-600 line-clamp-2">{a.message}</p>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              title="Delete"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleInitiateDelete(a);
-                              }}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 px-3 py-1.5 rounded-md transition-all flex items-center justify-center disabled:opacity-50 cursor-pointer"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
                     ))}
-                  </tbody>
+                  </tr>
+                </thead>
 
-                </table>
+                <tbody>
+                  {paginatedAnnouncements.map((announcement) => (
+                    <tr
+                      key={announcement.id}
+                      className="border-b border-[#F2ECFA] hover:bg-[#FAF8FE] transition-all duration-200"
+                    >
+                      <td className="px-5 py-3.5">
+                        <p className="text-sm font-semibold text-[#2B2340]">
+                          {announcement.title}
+                        </p>
+                        <p className="text-xs text-[#8E8AA2] mt-1">
+                          {announcement.target || "All Users"}
+                        </p>
+                      </td>
+                      <td className="px-5 py-3.5 text-sm text-[#2B2340]">
+                        {formatDate(announcement.date)}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                            priorityStyles[announcement.priority] ||
+                            priorityStyles.Normal
+                          }`}
+                        >
+                          {announcement.priority || "Normal"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 max-w-[560px]">
+                        <p className="text-sm text-[#5B5875] line-clamp-2">
+                          {announcement.message}
+                        </p>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <ActionButtons
+                          onDelete={() => setAnnouncementToDelete(announcement)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="bg-[#FAF8FE] border-t border-[#E7DFF2]">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                pageSize={pageSize}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+                totalItems={filteredAnnouncements.length}
+              />
+            </div>
+          </>
+        )}
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-xl bg-white border border-[#E7DFF2] shadow-xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E7DFF2]">
+              <div>
+                <h2 className="text-lg font-semibold text-[#5B3FD6]">
+                  Add Announcement
+                </h2>
+                <p className="mt-0.5 text-sm text-[#7C7297]">
+                  Create an announcement for a target audience.
+                </p>
               </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-[#F4F0FB] text-[#7C7297]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-              {/* Pagination Component */}
-              <div className="bg-gray-50 border-t border-gray-100">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  pageSize={pageSize}
-                  onPageSizeChange={(size) => {
-                    setPageSize(size);
-                    setCurrentPage(1);
-                  }}
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={(event) =>
+                    setFormData((current) => ({
+                      ...current,
+                      title: event.target.value,
+                    }))
+                  }
+                  placeholder="Enter announcement title"
+                  className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8]"
                 />
               </div>
-            </>
-          )}
-        </div>
 
-        {/* Add/Edit Modal */}
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={selectedAnnouncement ? "Edit Announcement" : "Add New Announcement"}>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <AnnouncementForm
-              onSubmit={handleFormSubmit}
-              onCancel={handleCloseModal}
-              loading={createLoading}
-              initialData={selectedAnnouncement || undefined}
-            />
-          </div>
-        </Modal>
-
-        {/* Confirmation delete */}
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          title="Confirm Delete"
-          message={
-            selectedAnnouncement ? (
               <div>
-                <p>Are you sure you want to delete the following announcement?</p>
-                <div className="mt-3 bg-white p-3 rounded-md border border-gray-100 shadow-sm">
-                  <h4 className="font-semibold text-gray-900">{selectedAnnouncement.title}</h4>
-                  <p className="text-sm text-gray-600 mt-1">{selectedAnnouncement.message}</p>
-                  <div className="flex justify-between mt-2 text-xs text-gray-500">
-                    <span>Date: {selectedAnnouncement.date}</span>
-                    <span>Priority: {selectedAnnouncement.priority}</span>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-gray-500">This action cannot be undone.</p>
+                <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
+                  Message
+                </label>
+                <textarea
+                  name="message"
+                  rows="4"
+                  value={formData.message}
+                  onChange={(event) =>
+                    setFormData((current) => ({
+                      ...current,
+                      message: event.target.value,
+                    }))
+                  }
+                  placeholder="Write the announcement message"
+                  className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none resize-none focus:ring-2 focus:ring-[#E7DDF8]"
+                />
               </div>
-            ) : (
-              "Are you sure you want to delete this announcement?"
-            )
-          }
-          confirmLabel="Delete"
-          cancelLabel="Cancel"
-          confirming={deleteLoading}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-          confirmClassName="px-4 py-2 bg-[#E6004C] hover:bg-[#C00041] text-white rounded-md shadow-sm transition-colors disabled:opacity-50"
-          cancelClassName="px-4 py-2 rounded-md text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
-        />
-      </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
+                    Target
+                  </label>
+                  <select
+                    name="target"
+                    value={formData.target}
+                    onChange={(event) =>
+                      setFormData((current) => ({
+                        ...current,
+                        target: event.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none"
+                  >
+                    <option>All Users</option>
+                    <option>Customers</option>
+                    <option>Dealers</option>
+                    <option>Admins</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
+                    Priority
+                  </label>
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={(event) =>
+                      setFormData((current) => ({
+                        ...current,
+                        priority: event.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none"
+                  >
+                    <option>Normal</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={(event) =>
+                      setFormData((current) => ({
+                        ...current,
+                        date: event.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 px-5 py-4 border-t border-[#E7DFF2]">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 rounded-lg bg-[#F4F0FB] hover:bg-[#EEE8FF] text-[#5B3FD6] text-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateAnnouncement}
+                className="px-4 py-2 rounded-lg bg-[#5B3FD6] hover:bg-[#4C32C7] text-white text-sm font-medium"
+              >
+                Add Announcement
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmationModal
+        isOpen={!!announcementToDelete}
+        title="Delete Announcement"
+        message={`Are you sure you want to delete "${
+          announcementToDelete?.title || "this announcement"
+        }"?`}
+        onConfirm={handleDeleteAnnouncement}
+        onCancel={() => setAnnouncementToDelete(null)}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };
