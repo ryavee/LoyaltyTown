@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import AdminLayout from "./components/Layout/AdminLayout";
+import AdminLayout from "./Components/Layout/AdminLayout";
 
 /* =========================
    PAGES

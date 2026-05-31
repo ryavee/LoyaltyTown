@@ -29,12 +29,12 @@ import {
   Cell,
 } from "recharts";
 
-import Card from "../components/ui/Card";
-import Badge from "../components/ui/Badge";
-import StatCard from "../components/ui/StatCard";
-import DonutChart from "../components/ui/DonutChart";
-import ProgressBar from "../components/ui/ProgressBar";
-import { tooltipProps, axisTick, kFmt } from "../components/ui/chartTheme";
+import Card from "../Components/ui/Card";
+import Badge from "../Components/ui/Badge";
+import StatCard from "../Components/ui/StatCard";
+import DonutChart from "../Components/ui/DonutChart";
+import ProgressBar from "../Components/ui/ProgressBar";
+import { tooltipProps, axisTick, kFmt } from "../Components/ui/chartTheme";
 import useDashboardData from "../hooks/useDashboardData";
 
 /* Quick Insights - Static signals */

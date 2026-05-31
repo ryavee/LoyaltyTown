@@ -10,7 +10,7 @@
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  
+
   /* Primary Gradient */
   --primary-start: #2D2A2E;
   --primary-end: #B3A08C;
@@ -50,6 +50,7 @@ body {
     opacity: 0;
     transform: scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -66,6 +67,7 @@ body {
     transform: scale(0.9);
     opacity: 0;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -81,6 +83,7 @@ body {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(-360deg);
   }
@@ -90,9 +93,8 @@ body {
   animation: spin-reverse 0.6s linear;
 }
 
-
 /* =======================
-   SCROLLBAR (CETRAK STYLE)
+   SCROLLBAR
 ======================= */
 
 /* Chrome / Edge / Safari */
@@ -101,23 +103,24 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F2ECFA;
+  border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(179, 160, 140, 0.4); /* warm sand */
+  background-color: #B8A6F3;
   border-radius: 9999px;
   transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(179, 160, 140, 0.7);
+  background-color: #5B3FD6;
 }
 
 /* Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(179, 160, 140, 0.5) transparent;
+  scrollbar-color: #B8A6F3 #F2ECFA;
 }
 
 
