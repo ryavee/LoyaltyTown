@@ -25,37 +25,41 @@ const ActionButtons = ({
 
   return (
     <div className="flex items-center gap-2">
-      {/* Edit Button */}
-      <button
-        onClick={onEdit}
-        disabled={disableAll || loadingEdit || loadingDelete}
-        className={`${editClass} ${
-          (disableAll || loadingEdit || loadingDelete) &&
-          "opacity-60 cursor-not-allowed"
-        }`}
-      >
-        {loadingEdit ? (
-          <Loader2 className="w-4 h-4 animate-spin text-[#169698]" />
-        ) : (
-          <SquarePen  className="w-4 h-4" />
-        )}
-      </button>
+      {onEdit && (
+        <button
+          type="button"
+          onClick={onEdit}
+          disabled={disableAll || loadingEdit || loadingDelete}
+          className={`${editClass} ${
+            (disableAll || loadingEdit || loadingDelete) &&
+            "opacity-60 cursor-not-allowed"
+          }`}
+        >
+          {loadingEdit ? (
+            <Loader2 className="w-4 h-4 animate-spin text-[#169698]" />
+          ) : (
+            <SquarePen  className="w-4 h-4" />
+          )}
+        </button>
+      )}
 
-      {/* Delete Button */}
-      <button
-        onClick={onDelete}
-        disabled={disableAll || loadingEdit || loadingDelete}
-        className={`${deleteClass} ${
-          (disableAll || loadingEdit || loadingDelete) &&
-          "opacity-60 cursor-not-allowed"
-        }`}
-      >
-        {loadingDelete ? (
-          <Loader2 className="w-4 h-4 animate-spin text-red-600" />
-        ) : (
-          <Trash2 className="w-4 h-4" />
-        )}
-      </button>
+      {onDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={disableAll || loadingEdit || loadingDelete}
+          className={`${deleteClass} ${
+            (disableAll || loadingEdit || loadingDelete) &&
+            "opacity-60 cursor-not-allowed"
+          }`}
+        >
+          {loadingDelete ? (
+            <Loader2 className="w-4 h-4 animate-spin text-red-600" />
+          ) : (
+            <Trash2 className="w-4 h-4" />
+          )}
+        </button>
+      )}
     </div>
   );
 };
