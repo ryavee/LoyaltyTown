@@ -27,6 +27,9 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  ScanLine,
+  Hash,
+  Layers,
 } from "lucide-react";
 
 const Sidebar = ({
@@ -60,6 +63,37 @@ const Sidebar = ({
           icon: LayoutDashboard,
           path: "/dashboard",
         },
+      ],
+    },
+
+    {
+      section: "QR MANAGEMENT",
+
+      items: [
+        {
+          name: "Generate QR",
+          icon: QrCode,
+          path: "/qr-generation",
+        },
+
+        {
+          name: "QR Batches",
+          icon: Layers,
+          path: "/qr-batches",
+        },
+
+        {
+          name: "QR Codes",
+          icon: Hash,
+          path: "/qr-codes",
+        },
+        {
+          name: "Scan Log",
+          icon: ScanLine,
+          path: "/scan-log",
+        },
+
+       
       ],
     },
 
