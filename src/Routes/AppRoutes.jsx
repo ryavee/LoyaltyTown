@@ -22,8 +22,10 @@ import AdminLayout from "../Components/Layout/AdminLayout";
    AUTH PAGES
 ========================================================= */
 
-import Login from "../Pages/Login";
-import PrivacyPolicy from "../Pages/PrivacyPolicy";
+import Login from "../pages/Login";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import LandingPage from "../pages/LandingPage";
+import CompanyRegistration from "../pages/CompanyRegistration";
 
 
 
@@ -128,6 +130,11 @@ const AppRoutes = () => {
       <Route
         path="/login"
         element={<Login />}
+      />
+
+      <Route
+        path="/register-company"
+        element={<CompanyRegistration />}
       />
 
       <Route
@@ -242,12 +249,7 @@ const AppRoutes = () => {
 
       <Route
         path="/"
-        element={
-          <Navigate
-            to="/login"
-            replace
-          />
-        }
+        element={<LandingPage />}
       />
 
 

@@ -108,15 +108,20 @@ const Sidebar = ({
         },
 
         {
-          name: "Customers",
-          icon: Users,
-          path: "/customers",
-        },
-
-        {
           name: "Dealers",
           icon: Briefcase,
           path: "/dealers",
+        },
+      ],
+    },
+
+    {
+      section: "CRM",
+      items: [
+        {
+          name: "Customers",
+          icon: Users,
+          path: "/customers",
         },
       ],
     },

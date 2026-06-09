@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Upload, ChevronDown } from "lucide-react";
+import { Upload, ChevronDown, Download } from "lucide-react";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import { getCurrentUserRole, ROLES } from "../utils/rbac";
 
 const ExportButton = ({
@@ -13,6 +15,7 @@ const ExportButton = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const currentUserRole = getCurrentUserRole();
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -24,8 +27,22 @@ const ExportButton = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getResolvedColumns = () => {
+    if (columns && columns.length > 0) {
+      return columns;
+    }
+    if (data && data.length > 0) {
+      return Object.keys(data[0]).map((key) => ({
+        key,
+        header: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
+      }));
+    }
+    return [];
+  };
+
   const handleExportDemo = () => {
-    const headers = columns.map((col) => col.header);
+    const resolvedColumns = getResolvedColumns();
+    const headers = resolvedColumns.map((col) => col.header);
     const csvRows = [headers.join(",")];
 
     const csvContent = csvRows.join("\n");
@@ -52,18 +69,19 @@ const ExportButton = ({
       return;
     }
 
-    const headers = columns.map((col) => col.header);
+    const resolvedColumns = getResolvedColumns();
+    const headers = resolvedColumns.map((col) => col.header);
     const csvRows = [headers.join(",")];
 
     data.forEach((item) => {
-      const row = columns.map((col) => {
+      const row = resolvedColumns.map((col) => {
         const value = item[col.key];
         const formattedValue = col.formatter
           ? col.formatter(value, item)
-          : value || "";
+          : value !== undefined && value !== null ? value : "";
         return formattedValue;
       });
-      csvRows.push(row.map((field) => `"${field}"`).join(","));
+      csvRows.push(row.map((field) => `"${String(field).replace(/"/g, '""')}"`).join(","));
     });
 
     const csvContent = csvRows.join("\n");
@@ -80,6 +98,41 @@ const ExportButton = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setIsOpen(false);
+  };
+
+  const handleExportPDF = () => {
+    const resolvedColumns = getResolvedColumns();
+    if (resolvedColumns.length === 0) return;
+
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(`${filename.toUpperCase()} REPORT`, 14, 15);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
+
+    const headers = resolvedColumns.map((col) => col.header);
+    const tableRows = data.map((item) =>
+      resolvedColumns.map((col) => {
+        const value = item[col.key];
+        return col.formatter ? col.formatter(value, item) : (value !== undefined && value !== null ? value : "");
+      })
+    );
+
+    doc.autoTable({
+      head: [headers],
+      body: tableRows,
+      startY: 28,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [91, 63, 214] }, // brand purple
+      alternateRowStyles: { fillColor: [248, 245, 252] },
+    });
+
+    doc.save(`${filename}-${new Date().toISOString().split("T")[0]}.pdf`);
     setIsOpen(false);
   };
 
@@ -105,23 +158,33 @@ const ExportButton = ({
           {currentUserRole === ROLES.QR_GENERATE && page === "dealers" && (
             <button
               onClick={handleExportDemo}
-              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 cursor-pointer"
+              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 cursor-pointer border-0 bg-transparent"
             >
               <Upload className="w-4 h-4" />
               Demo
             </button>
           )}
 
-          {/* Show Export to CSV for everyone else */}
+          {/* Show Export options for everyone else */}
           {currentUserRole !== ROLES.QR_GENERATE ? (
-            <button
-              onClick={handleExportCSV}
-              disabled={data.length === 0}
-              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              <Upload className="w-4 h-4" />
-              Export to CSV
-            </button>
+            <>
+              <button
+                onClick={handleExportCSV}
+                disabled={data.length === 0}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0 bg-transparent"
+              >
+                <Download className="w-4 h-4" />
+                Export to CSV
+              </button>
+              <button
+                onClick={handleExportPDF}
+                disabled={data.length === 0}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0 bg-transparent"
+              >
+                <Download className="w-4 h-4" />
+                Export to PDF
+              </button>
+            </>
           ) : null}
         </div>
       )}
