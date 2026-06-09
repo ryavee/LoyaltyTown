@@ -11,7 +11,6 @@ import {
   MoreVertical,
   Plus,
   Search,
-  Trash2,
   Users,
   X,
 } from "lucide-react";
@@ -19,6 +18,8 @@ import { toast } from "react-hot-toast";
 
 import ExportButton from "../Components/ExportButton";
 import ImportButton from "../Components/ImportButton";
+import ActionButtons from "../Components/Reusable/ActionButtons";
+import ConfirmationModal from "../Components/ConfirmationModal";
 import Pagination from "../Components/Reusable/Pagination";
 
 const initialDealers = [
@@ -329,13 +330,6 @@ const Dealers = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
-      <div className="mb-4">
-        <h1 className="text-[24px] font-extrabold leading-tight text-[#5B3FD6]">Dealers</h1>
-        <p className="mt-0.5 text-[13px] text-[#7C7297]">
-          Manage dealer onboarding, coverage, and network status.
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
         {stats.map((stat) => (
           <button
@@ -525,23 +519,12 @@ const Dealers = () => {
                       </td>
 
                       <td className="px-5 py-3.5">
-                        <button
-                          type="button"
-                          onClick={() => {
+                        <ActionButtons
+                          onDelete={() => {
                             setDealerToDelete(dealer);
                             setShowDeleteModal(true);
                           }}
-                          className="
-                          inline-flex items-center justify-center
-                          w-8 h-8 rounded-lg
-                          bg-[#FFEAF1] hover:bg-[#FFDDE7]
-                          text-[#E05A74]
-                          transition-all duration-200
-                          "
-                          aria-label={`Delete ${dealer.companyName}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        />
                       </td>
                     </tr>
                   ))}
@@ -695,50 +678,20 @@ const Dealers = () => {
         </div>
       )}
 
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white border border-[#E7DFF2] shadow-xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-2xl bg-[#FFEAF1] text-[#E05A74] flex items-center justify-center">
-                <AlertCircle className="w-5 h-5" />
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold text-[#2B2340]">
-                  Delete Dealer
-                </h2>
-                <p className="text-sm text-[#8E8AA2] mt-1">
-                  Are you sure you want to delete{" "}
-                  <span className="font-medium text-[#2B2340]">
-                    {dealerToDelete?.companyName || "this dealer"}
-                  </span>
-                  ?
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setDealerToDelete(null);
-                  setShowDeleteModal(false);
-                }}
-                className="px-4 py-2.5 rounded-xl bg-[#F4F0FB] hover:bg-[#EEE8FF] text-[#5B3FD6] text-sm font-medium"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2.5 rounded-xl bg-[#E05A74] hover:bg-[#D84B66] text-white text-sm font-medium inline-flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        title="Delete Dealer"
+        message={`Are you sure you want to delete "${
+          dealerToDelete?.companyName || "this dealer"
+        }"?`}
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setDealerToDelete(null);
+          setShowDeleteModal(false);
+        }}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

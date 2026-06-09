@@ -236,37 +236,6 @@ const AdminUsers = () => {
       <div>
 
         {/* =====================================================
-            HEADER
-        ===================================================== */}
-
-        <div className="mb-4">
-
-          <h1
-            className="
-            text-[24px]
-            leading-tight
-            font-extrabold
-            text-[#5B3FD6]
-            "
-          >
-            Admin Users
-          </h1>
-
-          <p
-            className="
-            text-[13px]
-            text-[#7C7297]
-            mt-0.5
-            "
-          >
-            Manage admin accounts and permissions.
-          </p>
-
-        </div>
-
-
-
-        {/* =====================================================
             CONTROLS
         ===================================================== */}
 

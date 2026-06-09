@@ -11,7 +11,6 @@ import {
   CheckCircle,
   Building2,
   MapPin,
-  Loader2,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -34,6 +33,7 @@ import Badge from "../Components/ui/Badge";
 import StatCard from "../Components/ui/StatCard";
 import DonutChart from "../Components/ui/DonutChart";
 import ProgressBar from "../Components/ui/ProgressBar";
+import LoadingSpinner from "../Components/Reusable/LoadingSpinner";
 import { tooltipProps, axisTick, kFmt } from "../Components/ui/chartTheme";
 import useDashboardData from "../hooks/useDashboardData";
 
@@ -72,12 +72,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex h-[80vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-[#5B3FD6]" />
-          <p className="text-[12px] font-semibold text-[#8E8AA2]">Loading dashboard data...</p>
-        </div>
-      </div>
+      <LoadingSpinner centered message="Loading dashboard data..." />
     );
   }
 
@@ -132,7 +127,7 @@ const Dashboard = () => {
   const approvedKycValue = kycStatus.find(d => d.name === "Approved")?.value || 0;
 
   return (
-    <div className="space-y-5 pb-8 animate-fadeIn">
+    <div className="space-y-5 pb-8">
       {/* ── highlights strip ─────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 py-3 border-b border-[#E9E2F3]">
         {topHighlights.map((h, i) => {

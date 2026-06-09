@@ -149,11 +149,11 @@ const Header = ({
 
           {/* Title + subtitle */}
           <div className="min-w-0">
-            <h1 className="text-[22px] font-bold text-[#1E1B4B] leading-none">
+            <h1 className="text-[22px] font-bold text-[#5B3FD6] leading-none">
               {config.title}
             </h1>
             {config.subtitle && (
-              <p className="text-[12px] text-[#6B7280] mt-2">
+              <p className="text-[12px] text-[#7C7297] mt-2">
                 {config.subtitle}
               </p>
             )}

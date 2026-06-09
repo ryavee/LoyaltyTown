@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
+import ConfirmationModal from "../Components/ConfirmationModal";
 import Pagination from "../Components/Reusable/Pagination";
 
 const initialRedemptions = [
@@ -322,15 +323,6 @@ const Redemption = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
-      <div className="mb-4">
-        <h1 className="text-[24px] font-extrabold leading-tight text-[#5B3FD6]">
-          Redemption Management
-        </h1>
-        <p className="mt-0.5 text-[13px] text-[#7C7297]">
-          Manage customer redemption requests and payout approvals.
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
         {statCards.map((stat) => (
           <button
@@ -605,39 +597,17 @@ const Redemption = () => {
         )}
       </div>
 
-      {confirmAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl bg-white border border-[#E7DFF2] shadow-xl p-6">
-            <h2 className="text-lg font-semibold text-[#5B3FD6]">
-              {confirmAction.title}
-            </h2>
-            <p className="mt-2 text-sm text-[#7C7297]">
-              {confirmAction.message}
-            </p>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setConfirmAction(null)}
-                className="px-4 py-2 rounded-lg bg-[#F4F0FB] hover:bg-[#EEE8FF] text-[#5B3FD6] text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() =>
-                  updateStatus(confirmAction.ids, confirmAction.status)
-                }
-                className={`px-4 py-2 rounded-lg text-white text-sm font-medium ${
-                  confirmAction.status === "A"
-                    ? "bg-[#36B37E] hover:bg-[#2CA06F]"
-                    : "bg-[#E05A74] hover:bg-[#D84B66]"
-                }`}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={!!confirmAction}
+        title={confirmAction?.title || ""}
+        message={confirmAction?.message || ""}
+        onConfirm={() =>
+          confirmAction && updateStatus(confirmAction.ids, confirmAction.status)
+        }
+        onCancel={() => setConfirmAction(null)}
+        confirmText="Confirm"
+        type={confirmAction?.status === "A" ? "success" : "danger"}
+      />
     </div>
   );
 };

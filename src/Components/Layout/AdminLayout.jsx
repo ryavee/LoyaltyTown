@@ -2,7 +2,6 @@ import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from '../../contexts/AuthContext';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -60,8 +59,11 @@ const AdminLayout = () => {
         />
 
         {/* ===== CONTENT ===== */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-5 bg-[#F8F5FC]">
-          <div className="w-full max-w-[1600px] mx-auto">
+        <main className="custom-scrollbar flex-1 overflow-y-auto p-4 md:p-5 bg-[#F8F5FC]">
+          <div
+            key={location.pathname}
+            className="w-full max-w-[1600px] mx-auto animate-fadeIn"
+          >
             <Outlet context={{ timeRange, searchQuery }} />
           </div>
         </main>
