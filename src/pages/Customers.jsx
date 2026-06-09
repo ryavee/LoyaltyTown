@@ -18,6 +18,7 @@ import {
   ExternalLink,
   ChevronUp,
   ChevronDown,
+  ChevronsUpDown,
   MapPin,
 } from "lucide-react";
 
@@ -445,6 +446,18 @@ const loading = false;
     },
   ];
 
+  const SortIndicator = ({ sortKey }) => {
+    if (!sortKey) return null;
+    if (sortConfig.key !== sortKey) {
+      return <ChevronsUpDown className="w-3.5 h-3.5 text-[#AAA2BE]" />;
+    }
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="w-3.5 h-3.5 text-[#5B3FD6]" />
+    ) : (
+      <ChevronDown className="w-3.5 h-3.5 text-[#5B3FD6]" />
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
 
@@ -831,7 +844,6 @@ const loading = false;
 
                       text-[#8E8AA2]
 
-                      cursor-pointer
                       "
                     >
 
@@ -843,17 +855,7 @@ const loading = false;
                           {head.label}
                         </span>
 
-                        {sortConfig.key ===
-                          head.key && (
-
-                          sortConfig.direction === "asc"
-                            ? (
-                              <ChevronUp className="w-4 h-4" />
-                            )
-                            : (
-                              <ChevronDown className="w-4 h-4" />
-                            )
-                        )}
+                        <SortIndicator sortKey={head.key} />
 
                       </div>
 

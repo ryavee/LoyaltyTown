@@ -4,6 +4,7 @@ import {
   CheckSquare,
   ChevronDown,
   ChevronUp,
+  ChevronsUpDown,
   CircleStar,
   Download,
   FileText,
@@ -17,10 +18,14 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-const dealers = [
-  { dealerId: "DLR1001", companyName: "Raj Hardware Traders" },
-  { dealerId: "DLR1002", companyName: "Aman Paint House" },
-  { dealerId: "DLR1003", companyName: "Singh Building Mart" },
+import Pagination from "../Components/Reusable/Pagination";
+
+const partners = [
+  { partnerId: "DLR1001", companyName: "Raj Hardware Traders", type: "Dealer" },
+  { partnerId: "DLR1002", companyName: "Aman Paint House", type: "Dealer" },
+  { partnerId: "DLR1003", companyName: "Singh Building Mart", type: "Dealer" },
+  { partnerId: "DST1001", companyName: "South Zone Distribution", type: "Distributor" },
+  { partnerId: "DST1002", companyName: "Metro Supply Chain", type: "Distributor" },
 ];
 
 const products = [
@@ -86,7 +91,7 @@ const initialBatches = [
 const emptyForm = {
   numberOfCodes: "",
   productId: "",
-  dealerId: "",
+  partnerId: "",
   expiryType: "None",
   customDate: "",
   remarks: "",
@@ -103,16 +108,19 @@ const QRGeneration = () => {
     direction: "asc",
   });
   const [selectedBatches, setSelectedBatches] = useState([]);
+  const [formErrors, setFormErrors] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const selectedProduct = products.find(
     (product) => product.productId === formData.productId
   );
-  const selectedDealer = dealers.find(
-    (dealer) => dealer.dealerId === formData.dealerId
+  const selectedPartner = partners.find(
+    (partner) => partner.partnerId === formData.partnerId
   );
 
   const generatedBatchId = useMemo(() => {
-    if (!selectedDealer || !selectedProduct) return "";
+    if (!selectedProduct) return "";
 
     const date = new Date();
     const datePart = [
@@ -124,9 +132,16 @@ const QRGeneration = () => {
       selectedProduct.productUnit.match(/\d+/)?.[0]?.padStart(3, "0") ||
       "000";
     const sequence = String(batches.length + 1).padStart(4, "0");
+    const partnerPart = selectedPartner
+      ? selectedPartner.partnerId.slice(0, 4)
+      : "OPEN";
 
-    return `${selectedDealer.dealerId.slice(0, 4)}${selectedProduct.productId}${unitPart}${datePart}${sequence}`;
-  }, [batches.length, selectedDealer, selectedProduct]);
+    return `${partnerPart}${selectedProduct.productId}${unitPart}${datePart}${sequence}`;
+  }, [batches.length, selectedPartner, selectedProduct]);
+
+  const previewQuantity = Number(formData.numberOfCodes || 0);
+  const previewPointsPerCode = Number(selectedProduct?.productPoint || 0);
+  const previewTotalPoints = previewQuantity * previewPointsPerCode;
 
   const totalCodes = batches.reduce(
     (sum, batch) => sum + Number(batch.quantity || 0),
@@ -190,6 +205,12 @@ const QRGeneration = () => {
     return sortableBatches;
   }, [filteredBatches, sortConfig]);
 
+  const totalPages = Math.max(1, Math.ceil(sortedBatches.length / pageSize));
+  const paginatedBatches = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return sortedBatches.slice(start, start + pageSize);
+  }, [currentPage, pageSize, sortedBatches]);
+
   const requestSort = (key) => {
     if (!key) return;
 
@@ -198,6 +219,7 @@ const QRGeneration = () => {
       direction:
         current.key === key && current.direction === "asc" ? "desc" : "asc",
     }));
+    setCurrentPage(1);
   };
 
   const handleInputChange = (event) => {
@@ -205,6 +227,10 @@ const QRGeneration = () => {
     setFormData((current) => ({
       ...current,
       [name]: value,
+    }));
+    setFormErrors((current) => ({
+      ...current,
+      [name]: "",
     }));
   };
 
@@ -219,14 +245,22 @@ const QRGeneration = () => {
   };
 
   const handleGenerate = () => {
-    if (!formData.numberOfCodes || !selectedProduct || !selectedDealer) {
-      toast.error("Number of codes, product, and dealer are required");
-      return;
+    const quantity = Number(formData.numberOfCodes);
+    const nextErrors = {};
+
+    if (!formData.numberOfCodes) {
+      nextErrors.numberOfCodes = "Number of codes is required";
+    } else if (!quantity || quantity <= 0) {
+      nextErrors.numberOfCodes = "Number of codes must be greater than zero";
     }
 
-    const quantity = Number(formData.numberOfCodes);
-    if (!quantity || quantity <= 0) {
-      toast.error("Number of codes must be greater than zero");
+    if (!selectedProduct) {
+      nextErrors.productId = "Product is required";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFormErrors(nextErrors);
+      toast.error("Please fill the required fields");
       return;
     }
 
@@ -237,8 +271,9 @@ const QRGeneration = () => {
         batchId: generatedBatchId,
         productName: selectedProduct.productName,
         productId: selectedProduct.productId,
-        companyName: selectedDealer.companyName,
-        dealerId: selectedDealer.dealerId,
+        companyName: selectedPartner?.companyName || "Open Stock",
+        dealerId: selectedPartner?.partnerId || "N/A",
+        partnerType: selectedPartner?.type || "Unassigned",
         points: selectedProduct.productPoint,
         quantity,
         expiryDate: getExpiryDate(),
@@ -249,7 +284,9 @@ const QRGeneration = () => {
     ]);
 
     setFormData(emptyForm);
+    setFormErrors({});
     setShowForm(false);
+    setCurrentPage(1);
     toast.success("QR batch generated successfully");
   };
 
@@ -283,7 +320,7 @@ const QRGeneration = () => {
     const headers = [
       "Batch ID",
       "Product",
-      "Dealer",
+      "Dealer / Distributor",
       "Codes",
       "Points",
       "Expiry Date",
@@ -320,13 +357,32 @@ const QRGeneration = () => {
   const tableHeads = [
     { label: "Batch ID", icon: Hash, key: "batchId" },
     { label: "Product", icon: Package, key: "productName" },
-    { label: "Dealer", icon: QrCode, key: "companyName" },
+    { label: "Dealer / Distributor", icon: QrCode, key: "companyName" },
     { label: "Codes", icon: QrCode, key: "quantity" },
     { label: "Points", icon: CircleStar, key: "points" },
     { label: "Expiry", icon: Calendar, key: "expiryDate" },
     { label: "Created", icon: Calendar, key: "createdAt" },
     { label: "Action", icon: Download },
   ];
+
+  const SortIndicator = ({ sortKey }) => {
+    if (!sortKey) return null;
+
+    if (sortConfig.key !== sortKey) {
+      return <ChevronsUpDown className="w-3.5 h-3.5 text-[#AAA2BE]" />;
+    }
+
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="w-3.5 h-3.5 text-[#5B3FD6]" />
+    ) : (
+      <ChevronDown className="w-3.5 h-3.5 text-[#5B3FD6]" />
+    );
+  };
+
+  const formatBatchId = (batchId) => {
+    if (!batchId || batchId.length <= 18) return batchId;
+    return `${batchId.slice(0, 8)}...${batchId.slice(-6)}`;
+  };
 
   if (showForm) {
     return (
@@ -337,7 +393,7 @@ const QRGeneration = () => {
               Generate QR Codes
             </h1>
             <p className="mt-0.5 text-[13px] text-[#7C7297]">
-              Create a new QR batch for a product and dealer.
+              Create a new QR batch for a product, dealer, or distributor.
             </p>
           </div>
 
@@ -352,11 +408,12 @@ const QRGeneration = () => {
           </button>
         </div>
 
+        <div className="grid grid-cols-1 xl:grid-cols-[1.35fr_0.65fr] gap-4">
         <div className="bg-white/95 rounded-xl border border-[#E7DFF2] p-4 shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
-                Number of Codes
+                Number of Codes <span className="text-[#E05A74]">*</span>
               </label>
               <input
                 type="number"
@@ -365,24 +422,36 @@ const QRGeneration = () => {
                 value={formData.numberOfCodes}
                 onChange={handleInputChange}
                 placeholder="Enter number of codes"
-                className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8]"
+                className={`w-full px-4 py-2 rounded-lg border bg-[#FAF8FE] text-sm outline-none focus:ring-2 transition-all ${
+                  formErrors.numberOfCodes
+                    ? "border-[#E05A74] focus:ring-[#FFDDE7]"
+                    : "border-[#E7DFF2] focus:ring-[#E7DDF8]"
+                }`}
               />
+              {formErrors.numberOfCodes && (
+                <p className="mt-1 text-xs font-medium text-[#E05A74]">
+                  {formErrors.numberOfCodes}
+                </p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
-                Dealer
+                Dealer / Distributor
+                <span className="ml-1 text-xs font-normal text-[#8E8AA2]">
+                  Optional
+                </span>
               </label>
               <select
-                name="dealerId"
-                value={formData.dealerId}
+                name="partnerId"
+                value={formData.partnerId}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none"
               >
-                <option value="">Select dealer</option>
-                {dealers.map((dealer) => (
-                  <option key={dealer.dealerId} value={dealer.dealerId}>
-                    {dealer.companyName}
+                <option value="">No partner selected - Open stock</option>
+                {partners.map((partner) => (
+                  <option key={partner.partnerId} value={partner.partnerId}>
+                    {partner.companyName} ({partner.type})
                   </option>
                 ))}
               </select>
@@ -390,13 +459,17 @@ const QRGeneration = () => {
 
             <div>
               <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
-                Product
+                Product <span className="text-[#E05A74]">*</span>
               </label>
               <select
                 name="productId"
                 value={formData.productId}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none"
+                className={`w-full px-4 py-2 rounded-lg border bg-[#FAF8FE] text-sm outline-none focus:ring-2 transition-all ${
+                  formErrors.productId
+                    ? "border-[#E05A74] focus:ring-[#FFDDE7]"
+                    : "border-[#E7DFF2] focus:ring-[#E7DDF8]"
+                }`}
               >
                 <option value="">Select product</option>
                 {products.map((product) => (
@@ -405,6 +478,11 @@ const QRGeneration = () => {
                   </option>
                 ))}
               </select>
+              {formErrors.productId && (
+                <p className="mt-1 text-xs font-medium text-[#E05A74]">
+                  {formErrors.productId}
+                </p>
+              )}
             </div>
 
             <div>
@@ -470,10 +548,11 @@ const QRGeneration = () => {
 
           <div className="mt-5 flex justify-end gap-3">
             <button
-              onClick={() => {
-                setShowForm(false);
-                setFormData(emptyForm);
-              }}
+            onClick={() => {
+              setShowForm(false);
+              setFormData(emptyForm);
+              setFormErrors({});
+            }}
               className="px-4 py-2 rounded-lg bg-[#F4F0FB] hover:bg-[#EEE8FF] text-[#5B3FD6] text-sm font-medium"
             >
               Cancel
@@ -486,6 +565,53 @@ const QRGeneration = () => {
               Generate Batch
             </button>
           </div>
+        </div>
+
+        <div className="bg-white/95 rounded-xl border border-[#E7DFF2] p-4 shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-9 h-9 rounded-xl bg-[#EEE8FF] text-[#5B3FD6] flex items-center justify-center">
+              <QrCode className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-[#2B2340]">
+                Live Preview
+              </h2>
+              <p className="text-xs text-[#8E8AA2]">
+                QR batch summary before generation
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              ["Product", selectedProduct?.productName || "Select a product"],
+              ["Unit", selectedProduct?.productUnit || "-"],
+              ["Partner", selectedPartner?.companyName || "Open stock"],
+              ["Partner Type", selectedPartner?.type || "Optional"],
+              ["Codes", previewQuantity || 0],
+              ["Points / Code", previewPointsPerCode],
+              ["Total Reward Value", previewTotalPoints],
+              ["Expiry", getExpiryDate()],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                className="flex items-center justify-between gap-3 rounded-lg bg-[#FAF8FE] px-3 py-2"
+              >
+                <span className="text-xs text-[#8E8AA2]">{label}</span>
+                <span className="text-right text-sm font-semibold text-[#2B2340]">
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 rounded-xl bg-[#EEE8FF] p-3">
+            <p className="text-xs font-medium text-[#5B3FD6]">Batch ID</p>
+            <p className="mt-1 break-all text-sm font-semibold text-[#2B2340]">
+              {generatedBatchId || "Auto-generated after product selection"}
+            </p>
+          </div>
+        </div>
         </div>
       </div>
     );
@@ -541,16 +667,22 @@ const QRGeneration = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#AAA2BE]" />
             <input
               type="text"
-              placeholder="Search batch, product, dealer or remarks..."
+              placeholder="Search batch, product, dealer, distributor or remarks..."
               value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8]"
             />
           </div>
 
           <select
             value={dateFilter}
-            onChange={(event) => setDateFilter(event.target.value)}
+            onChange={(event) => {
+              setDateFilter(event.target.value);
+              setCurrentPage(1);
+            }}
             className="px-4 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none"
           >
             <option value="all">All Dates</option>
@@ -587,10 +719,21 @@ const QRGeneration = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full">
+            <table className="w-full min-w-[1120px] table-fixed">
+              <colgroup>
+                <col className="w-[44px]" />
+                <col className="w-[165px]" />
+                <col className="w-[175px]" />
+                <col className="w-[235px]" />
+                <col className="w-[80px]" />
+                <col className="w-[105px]" />
+                <col className="w-[105px]" />
+                <col className="w-[105px]" />
+                <col className="w-[95px]" />
+              </colgroup>
               <thead className="bg-[#F4F0FB] border-b border-[#E7DFF2]">
                 <tr>
-                  <th className="px-5 py-3 text-left">
+                  <th className="px-3 py-3 text-left">
                     <button onClick={handleSelectAll}>
                       {selectedBatches.length === sortedBatches.length ? (
                         <CheckSquare className="w-4 h-4 text-[#5B3FD6]" />
@@ -602,18 +745,19 @@ const QRGeneration = () => {
                   {tableHeads.map((head) => (
                     <th
                       key={head.label}
-                      onClick={() => requestSort(head.key)}
-                      className="px-5 py-3 text-left text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#8E8AA2] cursor-pointer"
+                      onClick={() => head.key && requestSort(head.key)}
+                      className={`px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.04em] text-[#8E8AA2] ${
+                        head.key ? "cursor-pointer" : ""
+                      }`}
                     >
-                      <div className="flex items-center gap-2 whitespace-nowrap">
-                        <head.icon className="w-4 h-4" />
-                        <span>{head.label}</span>
-                        {sortConfig.key === head.key &&
-                          (sortConfig.direction === "asc" ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          ))}
+                      <div className="flex h-5 items-center gap-1.5 leading-none">
+                        <head.icon className="w-3.5 h-3.5 shrink-0" />
+                        <span className="whitespace-nowrap">
+                          {head.label}
+                        </span>
+                        <span className="ml-auto shrink-0">
+                          <SortIndicator sortKey={head.key} />
+                        </span>
                       </div>
                     </th>
                   ))}
@@ -621,12 +765,12 @@ const QRGeneration = () => {
               </thead>
 
               <tbody>
-                {sortedBatches.map((batch) => (
+                {paginatedBatches.map((batch) => (
                   <tr
                     key={batch.batchId}
                     className="border-b border-[#F2ECFA] hover:bg-[#FAF8FE] transition-all duration-200"
                   >
-                    <td className="px-5 py-3.5">
+                    <td className="px-3 py-3.5">
                       <button onClick={() => handleSelectBatch(batch.batchId)}>
                         {selectedBatches.includes(batch.batchId) ? (
                           <CheckSquare className="w-4 h-4 text-[#5B3FD6]" />
@@ -635,42 +779,45 @@ const QRGeneration = () => {
                         )}
                       </button>
                     </td>
-                    <td className="px-5 py-3.5">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#EEE8FF] text-[#5B3FD6] text-xs font-semibold">
-                        {batch.batchId}
+                    <td className="px-3 py-3.5">
+                      <span
+                        title={batch.batchId}
+                        className="inline-flex max-w-full items-center rounded-lg bg-[#EEE8FF] px-2.5 py-1 text-[11px] font-semibold leading-4 text-[#5B3FD6]"
+                      >
+                        <span className="truncate">{formatBatchId(batch.batchId)}</span>
                       </span>
                     </td>
-                    <td className="px-5 py-3.5">
-                      <p className="text-sm font-semibold text-[#2B2340]">
+                    <td className="px-3 py-3.5">
+                      <p className="truncate text-sm font-semibold text-[#2B2340]">
                         {batch.productName}
                       </p>
                       <p className="text-xs text-[#8E8AA2] mt-1">
                         {batch.productId}
                       </p>
                     </td>
-                    <td className="px-5 py-3.5">
-                      <p className="text-sm text-[#2B2340]">
+                    <td className="px-3 py-3.5">
+                      <p className="truncate text-sm text-[#2B2340]">
                         {batch.companyName}
                       </p>
                       <p className="text-xs text-[#8E8AA2] mt-1">
-                        {batch.dealerId}
+                        {batch.partnerType || "Dealer"} - {batch.dealerId}
                       </p>
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-[#2B2340]">
+                    <td className="px-3 py-3.5 text-sm text-[#2B2340]">
                       {batch.quantity}
                     </td>
-                    <td className="px-5 py-3.5">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#EAFBF2] text-[#36B37E] text-xs font-semibold">
+                    <td className="px-3 py-3.5">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EAFBF2] text-[#36B37E] text-xs font-semibold">
                         {batch.points}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-[#2B2340]">
+                    <td className="px-3 py-3.5 text-sm text-[#2B2340]">
                       {batch.expiryDate}
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-[#2B2340]">
+                    <td className="px-3 py-3.5 text-sm text-[#2B2340]">
                       {batch.createdAt}
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-3 py-3.5">
                       <button
                         onClick={() =>
                           toast.success("PDF generation can be connected after adding PDF libraries")
@@ -685,6 +832,17 @@ const QRGeneration = () => {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              pageSize={pageSize}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setCurrentPage(1);
+              }}
+              totalItems={sortedBatches.length}
+            />
           </div>
         )}
       </div>
