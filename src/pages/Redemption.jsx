@@ -20,6 +20,8 @@ import { toast } from "react-hot-toast";
 
 import ConfirmationModal from "../Components/ConfirmationModal";
 import Pagination from "../Components/Reusable/Pagination";
+import StatCard from "../Components/ui/StatCard";
+import ExportButton from "../Components/ExportButton";
 
 const initialRedemptions = [
   {
@@ -235,50 +237,6 @@ const Redemption = () => {
     });
   };
 
-  const exportSelected = () => {
-    const rows = redemptions.filter((item) => selectedRows.includes(item.id));
-
-    if (rows.length === 0) {
-      toast.error("Select at least one row to export");
-      return;
-    }
-
-    const headers = [
-      "ID",
-      "User Name",
-      "Phone",
-      "UPI ID",
-      "Points",
-      "Amount",
-      "Status",
-      "Requested Date",
-    ];
-    const csvRows = rows.map((item) =>
-      [
-        item.id,
-        item.userName,
-        item.userPhone,
-        item.upiId,
-        item.points,
-        item.totalValue,
-        statusLabels[item.status],
-        formatDate(item.requestedAt),
-      ]
-        .map((value) => `"${value || ""}"`)
-        .join(",")
-    );
-
-    const blob = new Blob([[headers.join(","), ...csvRows].join("\n")], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `redemptions-${Date.now()}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-    toast.success(`Exported ${rows.length} redemption request(s)`);
-  };
 
   const statCards = [
     {
@@ -325,37 +283,30 @@ const Redemption = () => {
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
         {statCards.map((stat) => (
-          <button
+          <StatCard
             key={stat.title}
-            onClick={() => {
-              setFilter(stat.filter);
-              setCurrentPage(1);
-            }}
-            className={`
-            bg-white/95 rounded-xl border px-4 py-3.5
-            flex items-center gap-3 transition-all duration-200
-            hover:-translate-y-0.5 hover:shadow-sm
-            ${
-              filter === stat.filter
-                ? "border-[#5B3FD6] ring-2 ring-[#E7DDF8]"
-                : "border-[#E7DFF2]"
-            }
-            `}
-          >
-            <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.color}`}
-            >
-              <stat.icon className="w-4 h-4" />
-            </div>
-            <div className="text-left">
-              <p className="text-[12px] leading-4 text-[#8E8AA2]">
-                {stat.title}
-              </p>
-              <h3 className="text-xl font-bold leading-6 text-[#2B2340]">
-                {stat.value}
-              </h3>
-            </div>
-          </button>
+            variant="filter"
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            bg={stat.color.includes("EEE8FF") ? "bg-[#F3E8FF]" :
+                stat.color.includes("FFF4E5") ? "bg-[#FFF7ED]" :
+                stat.color.includes("EAFBF2") ? "bg-[#E8FBF2]" : "bg-[#FFF1F2]"}
+            border={stat.color.includes("EEE8FF") ? "border-[#DDD6FE]" :
+                    stat.color.includes("FFF4E5") ? "border-[#FED7AA]" :
+                    stat.color.includes("EAFBF2") ? "border-[#A7F3D0]" : "border-[#FECDD3]"}
+            iconBg={stat.color.includes("EEE8FF") ? "bg-[#7C3AED]" :
+                    stat.color.includes("FFF4E5") ? "bg-[#F59E0B]" :
+                    stat.color.includes("EAFBF2") ? "bg-[#059669]" : "bg-[#E11D48]"}
+            valueCl={stat.color.includes("EEE8FF") ? "text-[#5B3FD6]" :
+                     stat.color.includes("FFF4E5") ? "text-[#D97706]" :
+                     stat.color.includes("EAFBF2") ? "text-[#059669]" : "text-[#E11D48]"}
+            labelCl={stat.color.includes("EEE8FF") ? "text-[#7C3AED]" :
+                     stat.color.includes("FFF4E5") ? "text-[#F59E0B]" :
+                     stat.color.includes("EAFBF2") ? "text-[#22A861]" : "text-[#F43F5E]"}
+            isActive={filter === stat.filter}
+            onClick={() => { setFilter(stat.filter); setCurrentPage(1); }}
+          />
         ))}
       </div>
 
@@ -432,17 +383,21 @@ const Redemption = () => {
             Reject ({selectedRows.length})
           </button>
 
-          <button
-            onClick={exportSelected}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
-              selectedRows.length
-                ? "bg-[#EEE8FF] text-[#5B3FD6] hover:bg-[#E7DDF8]"
-                : "bg-[#F4F0FB] text-[#AAA2BE] cursor-not-allowed"
-            }`}
-          >
-            <Download className="w-4 h-4" />
-            Export
-          </button>
+          <ExportButton
+            data={redemptions.filter((item) => selectedRows.includes(item.id))}
+            columns={[
+              { key: "id", header: "ID" },
+              { key: "userName", header: "User Name" },
+              { key: "userPhone", header: "Phone" },
+              { key: "upiId", header: "UPI ID" },
+              { key: "points", header: "Points" },
+              { key: "totalValue", header: "Amount" },
+              { key: "status", header: "Status", formatter: (val) => statusLabels[val] || val },
+              { key: "requestedAt", header: "Requested Date", formatter: (val) => formatDate(val) },
+            ]}
+            filename="redemptions"
+            disabled={selectedRows.length === 0}
+          />
         </div>
       </div>
 

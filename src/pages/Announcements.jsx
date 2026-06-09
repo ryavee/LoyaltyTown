@@ -109,13 +109,13 @@ const Announcements = () => {
     (announcement) => announcement.target === "Dealers"
   ).length;
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setFormData((current) => ({
+  //     ...current,
+  //     [name]: value,
+  //   }));
+  // };
 
   const handleCreateAnnouncement = () => {
     if (!formData.title.trim() || !formData.message.trim()) {

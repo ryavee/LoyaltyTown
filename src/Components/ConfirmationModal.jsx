@@ -14,19 +14,20 @@ const ConfirmationModal = ({
   closeOnBackdrop = true,
   loadingText,
 }) => {
-  if (!isOpen) return null;
-
-  // 🎹 Keyboard Shortcuts (Esc = cancel, Enter = confirm)
+  //  Keyboard Shortcuts (Esc = cancel, Enter = confirm)
   useEffect(() => {
+    if (!isOpen) return;
     const handleKey = (e) => {
       if (e.key === "Escape") onCancel?.();
       if (e.key === "Enter") onConfirm?.();
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [isOpen]);
+  }, [isOpen, onCancel, onConfirm]);
 
-  // 🎨 Icon & Color Variants
+  if (!isOpen) return null;
+
+  //  Icon & Color Variants
   const variants = {
     danger: {
       icon: <AlertTriangle className="text-red-600 w-6 h-6" />,
@@ -48,7 +49,7 @@ const ConfirmationModal = ({
 
   const { icon, confirmClass } = variants[type] || variants.info;
 
-  // 🩵 Handle backdrop click (optional)
+  // Handle backdrop click (optional)
   const handleBackdropClick = (e) => {
     if (closeOnBackdrop && e.target === e.currentTarget) {
       onCancel?.();
@@ -61,7 +62,7 @@ const ConfirmationModal = ({
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-xl shadow-2xl w-[90%] sm:w-full sm:max-w-sm p-6 border border-gray-100 transform animate-modalPop relative">
-        {/* ❌ Close Icon */}
+        {/* Close Icon */}
         <button
           onClick={onCancel}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition cursor-pointer"
@@ -69,7 +70,7 @@ const ConfirmationModal = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* 🔹 Header */}
+        {/* Header */}
         <div className="flex items-center gap-3 mb-3">
           <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
             {icon}
@@ -77,10 +78,10 @@ const ConfirmationModal = ({
           <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
         </div>
 
-        {/* 🔸 Message */}
+        {/* Message */}
         <p className="text-sm text-gray-600 mb-6">{message}</p>
 
-        {/* 🔘 Buttons */}
+        {/* Buttons */}
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
