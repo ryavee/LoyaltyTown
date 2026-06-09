@@ -67,7 +67,7 @@ const card = {
 
 // ─── Sub-components ─────────────────────────────────────────
 
-const NavBar = ({ onStartFreeTrial }) => (
+const NavBar = ({ onStartFreeTrial, onLogin }) => (
   <nav style={{
     position: 'sticky', top: 0, zIndex: 100,
     background: 'rgba(10,15,30,0.85)',
@@ -85,6 +85,19 @@ const NavBar = ({ onStartFreeTrial }) => (
             {l}
           </a>
         ))}
+        <button
+          onClick={onLogin}
+          style={{
+            ...btnOutline,
+            borderColor: token.accent,
+            color: token.accent,
+            padding: '8px 20px',
+            fontSize: 14,
+            background: 'rgba(59, 130, 246, 0.05)',
+          }}
+        >
+          Login
+        </button>
         <button
           onClick={onStartFreeTrial}
           style={{ ...btnPrimary, padding: '9px 20px', fontSize: 14 }}
@@ -435,9 +448,13 @@ const LandingPage = () => {
     navigate('/register-company');
   };
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', background: token.navy, color: token.textPrimary }}>
-      <NavBar onStartFreeTrial={handleStartFreeTrial} />
+      <NavBar onStartFreeTrial={handleStartFreeTrial} onLogin={handleLogin} />
       <HeroSection onStartFreeTrial={handleStartFreeTrial} />
       <ProblemSection />
       <FeaturesSection />

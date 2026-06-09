@@ -427,7 +427,7 @@ const Login = () => {
             <div style={{ marginTop: 12, textAlign: 'center' }}>
               <button
                 type="button"
-                onClick={() => navigate('/landing')}
+                onClick={() => navigate('/register-company')}
                 style={{
                   background: 'transparent',
                   border: 'none',

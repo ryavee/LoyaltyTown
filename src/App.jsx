@@ -42,18 +42,18 @@ function App() {
         <Routes>
 
           {/* ======================
-              LOGIN
+              PUBLIC ROUTES
           ====================== */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/landing" element={<LandingPage />} />
-            <Route path="/register-company" element={<CompanyRegistration />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/register-company" element={<CompanyRegistration />} />
 
           {/* ======================
               ADMIN LAYOUT (protected)
           ====================== */}
           <Route element={<RequireAuth><AdminLayout /></RequireAuth>}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* USERS */}
