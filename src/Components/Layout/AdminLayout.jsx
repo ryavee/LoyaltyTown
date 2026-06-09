@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from '../../contexts/AuthContext';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -10,9 +11,12 @@ const AdminLayout = () => {
   const [timeRange, setTimeRange] = useState("7D");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/login");
+  const { logout } = useAuth();
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {}
+    navigate('/login', { replace: true });
   };
 
   return (
