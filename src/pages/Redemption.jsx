@@ -4,6 +4,7 @@ import {
   CheckCircle,
   ChevronDown,
   ChevronUp,
+  ChevronsUpDown,
   Clock,
   Download,
   Gift,
@@ -279,6 +280,18 @@ const Redemption = () => {
     { label: "Action", icon: MoreVertical },
   ];
 
+  const SortIndicator = ({ sortKey }) => {
+    if (!sortKey) return null;
+    if (sortConfig.key !== sortKey) {
+      return <ChevronsUpDown className="w-3.5 h-3.5 text-[#AAA2BE]" />;
+    }
+    return sortConfig.direction === "asc" ? (
+      <ChevronUp className="w-3.5 h-3.5 text-[#5B3FD6]" />
+    ) : (
+      <ChevronDown className="w-3.5 h-3.5 text-[#5B3FD6]" />
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F5FC] px-3 py-3 sm:px-4 sm:py-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
@@ -426,18 +439,15 @@ const Redemption = () => {
                     {tableHeads.map((head) => (
                       <th
                         key={head.label}
-                        onClick={() => requestSort(head.key)}
-                        className="px-5 py-3 text-left text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#8E8AA2] cursor-pointer"
+                        onClick={() => head.key && requestSort(head.key)}
+                        className={`px-5 py-3 text-left text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#8E8AA2] ${
+                          head.key ? "cursor-pointer" : ""
+                        }`}
                       >
                         <div className="flex items-center gap-2 whitespace-nowrap">
                           <head.icon className="w-4 h-4" />
                           <span>{head.label}</span>
-                          {sortConfig.key === head.key &&
-                            (sortConfig.direction === "asc" ? (
-                              <ChevronUp className="w-4 h-4" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4" />
-                            ))}
+                          <SortIndicator sortKey={head.key} />
                         </div>
                       </th>
                     ))}
