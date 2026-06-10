@@ -29,6 +29,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { useAuth } from "../../contexts/AuthContext";
+
 const Sidebar = ({
   onLogout,
   onClose,
@@ -38,13 +40,9 @@ const Sidebar = ({
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const role =
-    user?.role ||
-    user?.user?.role ||
-    "Guest";
+  const role = user?.role || "Guest";
 
   /* =====================================================
       MENU

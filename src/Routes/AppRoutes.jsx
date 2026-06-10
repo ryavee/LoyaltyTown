@@ -26,6 +26,8 @@ import Login from "../pages/Login";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import LandingPage from "../pages/LandingPage";
 import CompanyRegistration from "../pages/CompanyRegistration";
+import SaveCardDetails from "../pages/SaveCardDetails";
+import ForgotPassword from "../pages/ForgotPassword";
 
 
 
@@ -135,6 +137,16 @@ const AppRoutes = () => {
       <Route
         path="/register-company"
         element={<CompanyRegistration />}
+      />
+
+      <Route
+        path="/checkout"
+        element={<SaveCardDetails />}
+      />
+
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword />}
       />
 
       <Route

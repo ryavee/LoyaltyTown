@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -115,10 +115,9 @@ const Login = () => {
     setStatus('loading');
     setErrMsg('');
     try {
-      const response = await axios.post(
-        'https://loyaltytown.com/v1/auth/login',
-        { email, password },
-        { withCredentials: true }
+      const response = await api.post(
+        '/auth/login',
+        { email, password }
       );
       if (response.data.success) {
         const token = response.data.access_token;
@@ -127,7 +126,7 @@ const Login = () => {
         try { localStorage.setItem('lt_user', JSON.stringify(response.data.user)); } catch (e) {}
         try { setUser(response.data.user || null); } catch (e) {}
         // set default axios header for subsequent requests
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setStatus('success');
         // redirect to dashboard
         navigate('/dashboard', { replace: true });
@@ -412,7 +411,13 @@ const Login = () => {
 
             {/* Forgot */}
             <div style={css.forgotRow}>
-              <a href="#" style={css.forgotLink}>Forgot password?</a>
+              <button
+                type="button"
+                onClick={() => navigate('/forgot-password')}
+                style={{ ...css.forgotLink, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                Forgot password?
+              </button>
             </div>
 
             {/* Submit */}

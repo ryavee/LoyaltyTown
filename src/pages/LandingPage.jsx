@@ -445,7 +445,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleStartFreeTrial = () => {
-    navigate('/register-company');
+    navigate('/checkout');
   };
 
   const handleLogin = () => {

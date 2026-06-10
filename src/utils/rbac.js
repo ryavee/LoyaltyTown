@@ -7,7 +7,7 @@ export const ROLES = {
 
 export const getCurrentUserRole = () => {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("lt_user"));
 
     return user?.role || user?.user?.role || ROLES.GUEST;
   } catch {

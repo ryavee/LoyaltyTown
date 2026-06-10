@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, Bell, Search, ChevronDown, ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import useDebounce from "../../hooks/useDebounce";
 
 /* ─────────────────────────────────────────────────────────────
@@ -105,13 +106,14 @@ const Header = ({
   setSearchQuery,
 }) => {
   const [profileOpen, setProfileOpen] = useState(false);
+  const { user, logout } = useAuth();
   const [rawSearch, setRawSearch] = useState(searchQuery);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const userName = "Ravi Raj";
-  const userRole = "Super Admin";
-  const userInitials = "RR";
+  const userName = user?.name || "User";
+  const userRole = user?.role || "Member";
+  const userInitials = userName.split(' ').map(n => n[0] || '').join('').toUpperCase().slice(0, 2) || "U";
 
   // debounced search
   const debouncedSearch = useDebounce(rawSearch, 300);
@@ -251,7 +253,10 @@ const Header = ({
                   <p className="text-[10px] text-[#9CA3AF] mt-0.5">{userRole}</p>
                 </div>
                 <button
-                  onClick={onLogout}
+                  onClick={async () => {
+                    await logout();
+                    navigate('/login', { replace: true });
+                  }}
                   className="w-full text-left rounded-lg px-3 py-2 text-xs font-bold text-[#EF4444] hover:bg-[#FEE2E2] transition cursor-pointer"
                 >
                   Sign Out

@@ -19,6 +19,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import LandingPage from "./pages/LandingPage";
 import CompanyRegistration from "./pages/CompanyRegistration";
+import SaveCardDetails from "./pages/SaveCardDetails";
+import ForgotPassword from "./pages/ForgotPassword";
 
 import AdminUsers from "./pages/AdminUsers";
 import Customers from "./pages/Customers";
@@ -49,6 +51,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/register-company" element={<CompanyRegistration />} />
+          <Route path="/checkout" element={<SaveCardDetails />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* ======================
               ADMIN LAYOUT (protected)

@@ -1,16 +1,19 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [timeRange, setTimeRange] = useState("7D");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { logout } = useAuth();
   const handleLogout = async () => {
     try {
       await logout();
