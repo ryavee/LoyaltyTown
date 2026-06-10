@@ -27,6 +27,9 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  ScanLine,
+  Hash,
+  Layers,
 } from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
@@ -62,6 +65,37 @@ const Sidebar = ({
     },
 
     {
+      section: "QR MANAGEMENT",
+
+      items: [
+        {
+          name: "Generate QR",
+          icon: QrCode,
+          path: "/qr-generation",
+        },
+
+        {
+          name: "QR Batches",
+          icon: Layers,
+          path: "/qr-batches",
+        },
+
+        {
+          name: "QR Codes",
+          icon: Hash,
+          path: "/qr-codes",
+        },
+        {
+          name: "Scan Log",
+          icon: ScanLine,
+          path: "/scan-log",
+        },
+
+       
+      ],
+    },
+
+    {
       section: "USERS",
 
       items: [
@@ -72,15 +106,20 @@ const Sidebar = ({
         },
 
         {
-          name: "Customers",
-          icon: Users,
-          path: "/customers",
-        },
-
-        {
           name: "Dealers",
           icon: Briefcase,
           path: "/dealers",
+        },
+      ],
+    },
+
+    {
+      section: "CRM",
+      items: [
+        {
+          name: "Customers",
+          icon: Users,
+          path: "/customers",
         },
       ],
     },

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Bell, Search, ChevronDown, ArrowLeft } from "lucide-react";
+import { Menu, Bell, Search, ChevronDown, ArrowLeft, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import useDebounce from "../../hooks/useDebounce";
@@ -125,7 +125,7 @@ const Header = ({
   const isDashboard = location.pathname === "/dashboard";
 
   return (
-    <header className="h-16 px-6 bg-transparent flex items-center relative border-b border-[#E7DFF2]">
+    <header className="h-16 px-6 bg-white flex items-center relative border-b border-[#E7DFF2] z-30 shadow-xs">
       <div className="h-full flex w-full items-center justify-between gap-4">
                 {/* ── LEFT: hamburger + page title ── */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -151,11 +151,11 @@ const Header = ({
 
           {/* Title + subtitle */}
           <div className="min-w-0">
-            <h1 className="text-[22px] font-bold text-[#5B3FD6] leading-none">
+            <h1 className="text-[22px] font-bold text-[#5B3FD6] leading-tight">
               {config.title}
             </h1>
             {config.subtitle && (
-              <p className="text-[12px] text-[#7C7297] mt-2">
+              <p className="text-[11.5px] text-[#7C7297] mt-0.5 leading-snug">
                 {config.subtitle}
               </p>
             )}
@@ -200,9 +200,9 @@ const Header = ({
                     setRawSearch("");
                     if (setSearchQuery) setSearchQuery("");
                   }}
-                  className="text-[#A5A1B8] hover:text-[#7C3AED] text-xs font-bold"
+                  className="text-[#A5A1B8] hover:text-[#7C3AED] transition cursor-pointer"
                 >
-                  ✕
+                  <X className="h-3 w-3" />
                 </button>
               ) : (
                 <span className="rounded bg-[#EDE9FE] px-1.5 py-0.5 text-[9px] font-bold text-[#7C3AED]">

@@ -416,16 +416,12 @@ const AdminUsers = () => {
                     },
 
                   ].map(
-                    ({
-                      label,
-                      Icon,
-                      sortKey,
-                    }) => (
+                    (head) => (
                       <th
-                        key={label}
+                        key={head.label}
                         onClick={() =>
-                          sortKey &&
-                          requestSort(sortKey)
+                          head.sortKey &&
+                          requestSort(head.sortKey)
                         }
                         className="
                         px-5 py-3
@@ -440,12 +436,12 @@ const AdminUsers = () => {
 
                         <div className="flex items-center gap-1.5">
 
-                          <Icon className="w-4 h-4" />
+                          {head.Icon && <head.Icon className="w-4 h-4" />}
 
-                          <span>{label}</span>
+                          <span>{head.label}</span>
 
-                          {sortKey &&
-                            sortConfig.key === sortKey && (
+                          {head.sortKey &&
+                            sortConfig.key === head.sortKey && (
                               <>
                                 {sortConfig.direction ===
                                 "asc" ? (
