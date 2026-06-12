@@ -168,6 +168,15 @@ const AppRoutes = () => {
           element={<Dashboard />}
         />
 
+        {/* =====================================================
+          ADMIN / PROTECTED ROUTES
+          ===================================================== */}
+
+        {/* QR Management */}
+        <Route
+          path="/qr-generation"
+          element={<QRGeneration />}
+        />
 
 
         {/* =================================================
@@ -198,11 +207,6 @@ const AppRoutes = () => {
         <Route
           path="/products"
           element={<Products />}
-        />
-
-        <Route
-          path="/qr"
-          element={<QRGeneration />}
         />
 
         <Route
