@@ -135,12 +135,6 @@ const Sidebar = ({
         },
 
         {
-          name: "QR Generation",
-          icon: QrCode,
-          path: "/qr",
-        },
-
-        {
           name: "QR Track",
           icon: MapPin,
           path: "/track",

@@ -60,14 +60,16 @@ function App() {
           <Route element={<RequireAuth><AdminLayout /></RequireAuth>}>
             <Route path="/dashboard" element={<Dashboard />} />
 
+            {/* QR Management */}
+            <Route path="/qr-generation" element={<QRGeneration />} />
+
             {/* USERS */}
             <Route path="/factoryUsers" element={<AdminUsers />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/dealers" element={<Dealers />} />
 
             {/* PRODUCTS */}
-            <Route path="/products" element={<Products />} />
-            <Route path="/qr" element={<QRGeneration />} />
+            <Route path="/products" element={<Products />} />            
             <Route path="/track" element={<QRTrack />} />
             <Route path="/catalogue" element={<Catalogue />} />
             <Route path="/promotions" element={<Promotions />} />
