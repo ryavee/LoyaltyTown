@@ -14,10 +14,10 @@ const SaveCardDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    cardName: '',
-    cardNumber: '',
-    expiry: '',
-    cvc: '',
+    cardName: 'John Doe',
+    cardNumber: '4242 4242 4242 4242',
+    expiry: '12/26',
+    cvc: '123',
   });
 
   const handleInputChange = (e) => {
@@ -28,11 +28,14 @@ const SaveCardDetails = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    // Store card details in sessionStorage for the registration flow
+    sessionStorage.setItem('temp_checkout_data', JSON.stringify(formData));
+
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
       navigate('/register-company');
-    }, 2000);
+    }, 1500);
   };
 
   return (
@@ -124,7 +127,7 @@ const SaveCardDetails = () => {
                     type="text"
                     name="cardNumber"
                     required
-                    placeholder="0000 0000 0000 0000"
+                    placeholder="4242 4242 4242 4242"
                     className="w-full bg-[#0A0F1E] border border-slate-700 rounded-xl py-4 px-12 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={formData.cardNumber}
                     onChange={handleInputChange}
@@ -140,7 +143,7 @@ const SaveCardDetails = () => {
                     type="text"
                     name="expiry"
                     required
-                    placeholder="MM/YY"
+                    placeholder="12/26"
                     className="w-full bg-[#0A0F1E] border border-slate-700 rounded-xl py-4 px-5 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={formData.expiry}
                     onChange={handleInputChange}
@@ -152,7 +155,7 @@ const SaveCardDetails = () => {
                     type="text"
                     name="cvc"
                     required
-                    placeholder="•••"
+                    placeholder="123"
                     className="w-full bg-[#0A0F1E] border border-slate-700 rounded-xl py-4 px-5 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={formData.cvc}
                     onChange={handleInputChange}

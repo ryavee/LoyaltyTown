@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import {
   Building2,
   User,
@@ -36,11 +38,6 @@ const industries = [
 ];
 
 const countries = [
-  { name: "India", flag: "🇮🇳" },
-  { name: "United States", flag: "🇺🇸" },
-  { name: "United Kingdom", flag: "🇬🇧" },
-  { name: "United Arab Emirates", flag: "🇦🇪" },
-  { name: "Singapore", flag: "🇸🇬" },
   { name: "Afghanistan", flag: "🇦🇫" },
   { name: "Albania", flag: "🇦🇱" },
   { name: "Algeria", flag: "🇩🇿" },
@@ -114,6 +111,7 @@ const countries = [
   { name: "Honduras", flag: "🇭🇳" },
   { name: "Hungary", flag: "🇭🇺" },
   { name: "Iceland", flag: "🇮🇸" },
+  { name: "India", flag: "🇮🇳" },
   { name: "Indonesia", flag: "🇮🇩" },
   { name: "Iran", flag: "🇮🇷" },
   { name: "Iraq", flag: "🇮🇶" },
@@ -237,6 +235,7 @@ const countries = [
 
 const CompanyRegistration = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -251,20 +250,20 @@ const CompanyRegistration = () => {
 
   // Form State
   const [formData, setFormData] = useState({
-    companyName: '',
-    industry: '',
-    businessEmail: '',
-    mobileNumber: '',
+    companyName: 'Acme Test Corp',
+    industry: 'Plywood & Wood Panels',
+    businessEmail: 'business@acme.test',
+    mobileNumber: '9876543210',
     country: 'India',
-    state: '',
-    city: '',
+    state: 'West Bengal',
+    city: 'Kolkata',
     // Admin Details
-    adminName: '',
-    workEmail: '',
-    adminPhone: '',
-    password: '',
-    confirmPassword: '',
-    acceptTerms: false,
+    adminName: 'John Test Doe',
+    workEmail: 'admin@acme.test',
+    adminPhone: '9876543210',
+    password: 'TestPassword123!',
+    confirmPassword: 'TestPassword123!',
+    acceptTerms: true,
     // OTP
     otp: ['', '', '', '', '', '']
   });
@@ -318,13 +317,128 @@ const CompanyRegistration = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleNext = () => {
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+  const handleOtpChange = (index, value) => {
+    if (value.length > 1) value = value.slice(-1);
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtp = [...formData.otp];
+    newOtp[index] = value;
+    setFormData(prev => ({ ...prev, otp: newOtp }));
+
+    if (value !== '' && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !formData.otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      await api.post('/auth/resend-otp', { email: formData.workEmail });
+      alert('OTP resent successfully');
+    } catch (error) {
+      console.error('Resend OTP Error:', error);
+      alert(error.response?.data?.message || 'Failed to resend OTP');
+    }
+  };
+
+  const handleNext = async () => {
+    if (step === 1) {
+      setLoading(true);
+      // Added simulation delay to test the spinner for Step 1
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setLoading(false);
-      setStep(prev => prev + 1);
-    }, 800);
+      setStep(2);
+      return;
+    }
+
+    if (step === 2) {
+      setLoading(true);
+      // Added simulation delay to test the spinner for Step 2
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      try {
+        const checkoutData = JSON.parse(sessionStorage.getItem('temp_checkout_data') || '{}');
+
+        const payload = {
+          // Card Details
+          cardName: checkoutData.cardName,
+          cardNumber: (checkoutData.cardNumber || '').replace(/\s/g, ''),
+          expiry: checkoutData.expiry,
+          cvc: checkoutData.cvc,
+          // Business Details
+          companyName: formData.companyName,
+          industry: formData.industry,
+          businessEmail: formData.businessEmail,
+          mobileNumber: formData.mobileNumber,
+          country: formData.country,
+          state: formData.state,
+          city: formData.city,
+          // Admin Details
+          name: formData.adminName,
+          email: formData.workEmail,
+          phone: formData.adminPhone,
+          password: formData.password,
+          acceptTerms: formData.acceptTerms
+        };
+
+        const response = await api.post('/auth/register', payload);
+        console.log('Registration Success:', response.data);
+        setStep(3);
+      } catch (error) {
+        console.error('Registration Error:', error);
+        alert(error.response?.data?.message || 'Registration failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (step === 3) {
+      setLoading(true);
+      try {
+        const otpValue = formData.otp.join('');
+        if (otpValue.length < 6) {
+          alert('Please enter the full 6-digit OTP');
+          setLoading(false);
+          return;
+        }
+
+        const response = await api.post('/auth/verify-otp', {
+          email: formData.workEmail,
+          otp: otpValue
+        });
+
+        console.log('OTP Verification Success:', response.data);
+
+        // Store tokens/user data if provided by the backend
+        if (response.data.token) {
+          localStorage.setItem('authToken', response.data.token);
+        }
+        if (response.data.user) {
+          localStorage.setItem('lt_user', JSON.stringify(response.data.user));
+          setUser(response.data.user);
+        }
+
+        // Cleanup temporary checkout data
+        sessionStorage.removeItem('temp_checkout_data');
+
+        setStep(4);
+      } catch (error) {
+        console.error('OTP Verification Error:', error);
+        alert(error.response?.data?.message || 'OTP verification failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    setStep(prev => prev + 1);
   };
 
   const handleBack = () => {
@@ -675,11 +789,15 @@ const CompanyRegistration = () => {
                 </div>
 
                 <div className="flex justify-center gap-3">
-                  {[0, 1, 2, 3, 4, 5].map(i => (
+                  {formData.otp.map((digit, i) => (
                     <input
                       key={i}
+                      id={`otp-${i}`}
                       type="text"
                       maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(i, e)}
                       className="w-12 h-14 bg-[#0A0F1E] border border-white/10 rounded-xl text-center text-xl font-bold focus:border-blue-500 outline-none transition-all"
                     />
                   ))}
@@ -694,7 +812,7 @@ const CompanyRegistration = () => {
                 </button>
 
                 <p className="text-sm text-slate-500">
-                  Didn't receive code? <span className="text-blue-400 cursor-pointer">Resend OTP</span>
+                  Didn't receive code? <span className="text-blue-400 cursor-pointer" onClick={handleResendOtp}>Resend OTP</span>
                 </p>
               </div>
             )}
