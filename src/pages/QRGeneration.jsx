@@ -9,6 +9,7 @@ import {
   Download,
   FileText,
   Hash,
+  Loader2,
   Package,
   Plus,
   QrCode,
@@ -17,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import api from "../services/api";
 
 import Pagination from "../Components/Reusable/Pagination";
 
@@ -89,6 +91,7 @@ const initialBatches = [
 ];
 
 const emptyForm = {
+  name: "",
   numberOfCodes: "",
   productId: "",
   partnerId: "",
@@ -100,6 +103,7 @@ const emptyForm = {
 const QRGeneration = () => {
   const [batches, setBatches] = useState(initialBatches);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(emptyForm);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
@@ -244,9 +248,13 @@ const QRGeneration = () => {
     return date.toISOString().split("T")[0];
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     const quantity = Number(formData.numberOfCodes);
     const nextErrors = {};
+
+    if (!formData.name) {
+      nextErrors.name = "Batch name is required";
+    }
 
     if (!formData.numberOfCodes) {
       nextErrors.numberOfCodes = "Number of codes is required";
@@ -264,30 +272,56 @@ const QRGeneration = () => {
       return;
     }
 
-    const createdAt = new Date().toISOString().split("T")[0];
-
-    setBatches((current) => [
-      {
-        batchId: generatedBatchId,
-        productName: selectedProduct.productName,
+    setLoading(true);
+    try {
+      const expiryDate = getExpiryDate();
+      const payload = {
+        name: formData.name,
         productId: selectedProduct.productId,
-        companyName: selectedPartner?.companyName || "Open Stock",
-        dealerId: selectedPartner?.partnerId || "N/A",
-        partnerType: selectedPartner?.type || "Unassigned",
-        points: selectedProduct.productPoint,
-        quantity,
-        expiryDate: getExpiryDate(),
-        createdAt,
+        productName: selectedProduct.productName,
+        batchId: generatedBatchId,
         remarks: formData.remarks,
-      },
-      ...current,
-    ]);
+        quantity,
+        rewardPoints: selectedProduct.productPoint,
+        expiryDate: expiryDate === "None" ? null : expiryDate,
+      };
 
-    setFormData(emptyForm);
-    setFormErrors({});
-    setShowForm(false);
-    setCurrentPage(1);
-    toast.success("QR batch generated successfully");
+      const response = await api.post("qr/generate", payload);
+
+      if (response.status === 201) {
+        const createdAt = new Date().toISOString().split("T")[0];
+
+        setBatches((current) => [
+          {
+            batchId: generatedBatchId,
+            productName: selectedProduct.productName,
+            productId: selectedProduct.productId,
+            companyName: selectedPartner?.companyName || "Open Stock",
+            dealerId: selectedPartner?.partnerId || "N/A",
+            partnerType: selectedPartner?.type || "Unassigned",
+            points: selectedProduct.productPoint,
+            quantity,
+            expiryDate: expiryDate,
+            createdAt,
+            remarks: formData.remarks,
+          },
+          ...current,
+        ]);
+
+        setFormData(emptyForm);
+        setFormErrors({});
+        setShowForm(false);
+        setCurrentPage(1);
+        toast.success("QR batch generated successfully");
+      }
+    } catch (error) {
+      console.error("QR Generation Error:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to generate QR batch"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelectBatch = (batchId) => {
@@ -411,6 +445,29 @@ const QRGeneration = () => {
         <div className="grid grid-cols-1 xl:grid-cols-[1.35fr_0.65fr] gap-4">
         <div className="bg-white/95 rounded-xl border border-[#E7DFF2] p-4 shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
+                Batch / Campaign Name <span className="text-[#E05A74]">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="e.g. Laptop Campaign 2026"
+                className={`w-full px-4 py-2 rounded-lg border bg-[#FAF8FE] text-sm outline-none focus:ring-2 transition-all ${
+                  formErrors.name
+                    ? "border-[#E05A74] focus:ring-[#FFDDE7]"
+                    : "border-[#E7DFF2] focus:ring-[#E7DDF8]"
+                }`}
+              />
+              {formErrors.name && (
+                <p className="mt-1 text-xs font-medium text-[#E05A74]">
+                  {formErrors.name}
+                </p>
+              )}
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-[#2B2340] mb-1.5">
                 Number of Codes <span className="text-[#E05A74]">*</span>
@@ -560,9 +617,11 @@ const QRGeneration = () => {
 
             <button
               onClick={handleGenerate}
-              className="px-4 py-2 rounded-lg bg-[#5B3FD6] hover:bg-[#4C32C7] text-white text-sm font-medium"
+              disabled={loading}
+              className="px-4 py-2 rounded-lg bg-[#5B3FD6] hover:bg-[#4C32C7] text-white text-sm font-medium flex items-center gap-2"
             >
-              Generate Batch
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loading ? "Generating..." : "Generate Batch"}
             </button>
           </div>
         </div>
@@ -584,6 +643,7 @@ const QRGeneration = () => {
 
           <div className="space-y-3">
             {[
+              ["Batch Name", formData.name || "-"],
               ["Product", selectedProduct?.productName || "Select a product"],
               ["Unit", selectedProduct?.productUnit || "-"],
               ["Partner", selectedPartner?.companyName || "Open stock"],
