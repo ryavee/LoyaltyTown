@@ -82,7 +82,6 @@ const categories = ["Plywood", "Laminate", "Veneer", "Hardware", "Adhesive"];
 const productColumns = [
   { key: "productName", header: "Product Name" },
   { key: "sku", header: "SKU" },
-  { key: "brand", header: "Brand" },
   { key: "category", header: "Category" },
   { key: "mrp", header: "MRP" },
   { key: "basePoints", header: "Base Points" },
@@ -149,7 +148,6 @@ const Products = () => {
       const searchableValues = [
         product.productName,
         product.sku,
-        product.brand,
         product.category,
         product.description,
       ];
@@ -724,8 +722,7 @@ const Products = () => {
                         <p className="text-[11px] font-semibold text-[#8E8AA2] mt-0.5 truncate">
                           <span className="font-mono text-[#5B3FD6]">
                             {product.sku}
-                          </span>{" "}
-                          {product.brand ? `by ${product.brand}` : ""}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -925,9 +922,6 @@ const Products = () => {
                           <p className="text-sm font-bold text-[#2B2340] truncate">
                             {product.productName}
                           </p>
-                          <p className="text-[10px] text-[#8E8AA2] mt-0.5 truncate">
-                            {product.brand ? `Brand: ${product.brand}` : ""}
-                          </p>
                         </div>
                       </div>
                     </td>
@@ -1065,35 +1059,19 @@ const Products = () => {
                 />
               </div>
 
-              {/* SKU & Brand Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#2B2340] uppercase tracking-wider mb-1.5">
-                    SKU *
-                  </label>
-                  <input
-                    type="text"
-                    name="sku"
-                    value={productForm.sku}
-                    onChange={handleInputChange}
-                    placeholder="e.g. PLY-BIRCH-18"
-                    className="w-full px-3 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8] font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-[#2B2340] uppercase tracking-wider mb-1.5">
-                    Brand / Manufacturer
-                  </label>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={productForm.brand}
-                    onChange={handleInputChange}
-                    placeholder="e.g. CenturyPly"
-                    className="w-full px-3 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8]"
-                  />
-                </div>
+              {/* SKU */}
+              <div>
+                <label className="block text-xs font-bold text-[#2B2340] uppercase tracking-wider mb-1.5">
+                  SKU *
+                </label>
+                <input
+                  type="text"
+                  name="sku"
+                  value={productForm.sku}
+                  onChange={handleInputChange}
+                  placeholder="e.g. PLY-BIRCH-18"
+                  className="w-full px-3 py-2 rounded-lg border border-[#E7DFF2] bg-[#FAF8FE] text-sm outline-none focus:ring-2 focus:ring-[#E7DDF8] font-mono"
+                />
               </div>
 
               {/* Category & MRP Grid */}
