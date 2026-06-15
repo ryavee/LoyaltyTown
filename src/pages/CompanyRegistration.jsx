@@ -18,7 +18,11 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  X
+  X,
+  Users,
+  Gift,
+  Plug,
+  LayoutDashboard
 } from 'lucide-react';
 
 const industries = [
@@ -896,21 +900,70 @@ const CompanyRegistration = () => {
 
             {/* ── Step 4: Success ── */}
             {step === 4 && (
-              <div className="space-y-8 animate-in zoom-in duration-500">
-                <div className="text-center py-8">
-                  <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="text-green-500 w-10 h-10" />
+              <div className="max-w-lg mx-auto px-6 py-10 space-y-5 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+
+                {/* Hero */}
+                <div className="flex flex-col items-center text-center mb-10">
+                  <div className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-6 ring-0 animate-[pulse_2.2s_ease-in-out_0.5s_infinite] ring-emerald-100">
+                    <CheckCircle2 className="text-emerald-500 w-9 h-9" />
                   </div>
-                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Company Created Successfully!</h2>
-                  <p className="text-slate-400">Welcome to LoyaltyTown. Your business account has been set up.</p>
+                  <span className="inline-block text-[11px] font-medium tracking-widest uppercase text-emerald-600 bg-emerald-50 border border-emerald-200 px-3.5 py-1 rounded-md mb-3">
+                    Account ready
+                  </span>
+                  <h2 className="text-[22px] font-medium text-slate-900 mb-2.5 leading-snug">
+                    Welcome to LoyaltyTown!
+                  </h2>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    Your LoyaltyTown business account is fully set up and ready to use.
+                  </p>
                 </div>
 
+                {/* What's next card */}
+                <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-5">
+                  <p className="text-[11px] font-medium tracking-widest uppercase text-slate-400 mb-4">
+                    What's next
+                  </p>
+                  <div className="space-y-4">
+                    {[
+                      { icon: Users, label: "Invite your team", desc: "Add members and assign roles from the dashboard." },
+                      { icon: Gift, label: "Create your first reward", desc: "Set up loyalty programs to engage your customers." },
+                      { icon: Plug, label: "Connect your store", desc: "Integrate with your existing POS or ecommerce platform." },
+                    ].map(({ icon: Icon, label, desc }) => (
+                      <div key={label} className="flex items-start gap-3">
+                        <div className="w-7 h-7 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 mt-0.5">
+                          <Icon size={13} className="text-slate-400" />
+                        </div>
+                        <div>
+                          <p className="text-[13px] font-medium text-slate-800 mb-0.5">{label}</p>
+                          <p className="text-xs text-slate-500">{desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="w-full bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-5 py-3.5 text-sm font-medium text-slate-800 flex items-center justify-between hover:bg-slate-50 transition-colors group"
                 >
-                  Go to Dashboard <ChevronRight size={20} />
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center">
+                      <LayoutDashboard size={15} className="text-blue-500" />
+                    </div>
+                    Go to dashboard
+                  </div>
+                  <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
                 </button>
+
+                {/* Footer */}
+                <div className="border-t border-slate-100 pt-6 text-center">
+                  <p className="text-[11px] text-slate-400 leading-loose">
+                    © 2026 Adiion Digital Labs Private Limited<br />
+                    LoyaltyTown™ is a trademark of Adiion Digital Labs · All rights reserved
+                  </p>
+                </div>
+
               </div>
             )}
           </div>
