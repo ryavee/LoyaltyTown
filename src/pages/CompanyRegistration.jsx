@@ -897,47 +897,12 @@ const CompanyRegistration = () => {
             {/* ── Step 4: Success ── */}
             {step === 4 && (
               <div className="space-y-8 animate-in zoom-in duration-500">
-                <div className="text-center">
+                <div className="text-center py-8">
                   <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle2 className="text-green-500 w-10 h-10" />
                   </div>
-                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome to LoyaltyTown!</h2>
-                  <p className="text-slate-400">Your account is verified. Let's set up your brand.</p>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-slate-400">Setup Progress</span>
-                      <span className="text-blue-600 font-bold">20% Complete</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: '20%' }} />
-                    </div>
-                  </div>
-
-                  <div className="bg-[#f9f8f6] rounded-2xl border border-slate-200 overflow-hidden">
-                    {[
-                      { label: 'Company Created', done: true },
-                      { label: 'Create First Product', done: false },
-                      { label: 'Generate QR Codes', done: false },
-                      { label: 'Launch Loyalty Program', done: false },
-                    ].map((task, i) => (
-                      <div key={i} className="flex items-center justify-between p-4 border-b border-slate-200 last:border-0">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                            task.done ? 'bg-green-500 border-green-500' : 'border-slate-300'
-                          }`}>
-                            {task.done && <CheckCircle2 size={12} className="text-white" />}
-                          </div>
-                          <span className={task.done ? 'text-slate-300' : 'text-slate-500'}>{task.label}</span>
-                        </div>
-                        {!task.done && i === 1 && (
-                          <button className="text-xs font-bold text-blue-600 hover:underline">Start</button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Company Created Successfully!</h2>
+                  <p className="text-slate-400">Welcome to LoyaltyTown. Your business account has been set up.</p>
                 </div>
 
                 <button
