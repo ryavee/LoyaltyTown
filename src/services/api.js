@@ -3,9 +3,6 @@ import axios from 'axios';
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     withCredentials: true, // CRITICAL: Allows the browser to send and receive the HTTP-Only cookie
-    headers: {
-        'Content-Type': 'application/json',
-    }
 });
 
 // Request interceptor to add the auth token to headers
@@ -15,6 +12,13 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Do not force JSON for file uploads. The browser must generate the
+        // multipart/form-data boundary when Axios sends FormData.
+        if (config.data instanceof FormData) {
+            config.headers.delete('Content-Type');
+        }
+
         return config;
     },
     (error) => {

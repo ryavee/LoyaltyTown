@@ -31,6 +31,34 @@ const unwrapProduct = (response) => {
   return data?.product ?? data;
 };
 
+const toAbsoluteImageUrl = (imageUrl) => {
+  if (!imageUrl?.trim()) {
+    throw new Error("The upload response did not include an image URL.");
+  }
+
+  if (/^https?:\/\//i.test(imageUrl)) {
+    return imageUrl;
+  }
+
+  const apiBaseUrl = api.defaults.baseURL;
+  if (!apiBaseUrl) {
+    throw new Error("Cannot resolve the uploaded image URL.");
+  }
+
+  return new URL(imageUrl, apiBaseUrl).toString();
+};
+
+export const uploadProductImage = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+
+  // Let Axios/browser set Content-Type so the multipart boundary is included.
+  const response = await api.post("/uploads/product-image", formData);
+  const data = response.data?.data ?? response.data;
+
+  return toAbsoluteImageUrl(data?.imageUrl ?? data?.url);
+};
+
 export const createProduct = async (product) => {
   const response = await api.post("/products", buildProductPayload(product));
   return unwrapProduct(response);

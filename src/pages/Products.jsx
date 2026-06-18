@@ -34,6 +34,7 @@ import {
   createProduct,
   toProductViewModel,
   updateProduct,
+  uploadProductImage,
 } from "../services/products";
 import { getCurrentUserRole, ROLES } from "../utils/rbac";
 
@@ -141,6 +142,7 @@ const Products = () => {
   const [productForm, setProductForm] = useState(emptyProduct);
   const [formError, setFormError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageTab, setImageTab] = useState("upload"); // upload or url
 
   const fileInputRef = useRef(null);
@@ -255,20 +257,44 @@ const Products = () => {
     }));
   };
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size exceeds 5MB limit");
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      event.target.value = "";
       return;
     }
 
-    event.target.value = "";
-    toast.error(
-      "Direct image upload is not configured yet. Upload the image to your CDN and use its URL."
-    );
-    setImageTab("url");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size exceeds 5MB limit");
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setFormError("");
+
+    try {
+      const imageUrl = await uploadProductImage(file);
+
+      setProductForm((prev) => ({
+        ...prev,
+        image: imageUrl,
+      }));
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      const backendMessage = error.response?.data?.message;
+      const message = Array.isArray(backendMessage)
+        ? backendMessage.join(" ")
+        : backendMessage || error.message || "Image upload failed";
+
+      toast.error(message);
+    } finally {
+      setIsUploadingImage(false);
+      event.target.value = "";
+    }
   };
 
   const openAddModal = () => {
@@ -299,6 +325,8 @@ const Products = () => {
   };
 
   const closeProductModal = () => {
+    if (isUploadingImage) return;
+
     setShowProductModal(false);
     setEditingProductId(null);
     setProductForm(emptyProduct);
@@ -306,6 +334,11 @@ const Products = () => {
   };
 
   const handleSaveProduct = async () => {
+    if (isUploadingImage) {
+      setFormError("Please wait for the image upload to finish.");
+      return;
+    }
+
     const productName = productForm.productName.trim();
     const sku = productForm.sku.trim();
     const brand = productForm.brand.trim();
@@ -1284,21 +1317,38 @@ const Products = () => {
                   <div className="flex-1 w-full">
                     {imageTab === "upload" ? (
                       <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-[#E7DFF2] hover:border-[#5B3FD6] rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#FAF8FE] flex flex-col items-center justify-center gap-1.5"
+                        onClick={() => {
+                          if (!isUploadingImage) {
+                            fileInputRef.current?.click();
+                          }
+                        }}
+                        className={`border-2 border-dashed rounded-xl p-5 text-center transition-colors bg-[#FAF8FE] flex flex-col items-center justify-center gap-1.5 ${
+                          isUploadingImage
+                            ? "border-[#E7DFF2] cursor-wait opacity-70"
+                            : "border-[#E7DFF2] hover:border-[#5B3FD6] cursor-pointer"
+                        }`}
                       >
-                        <UploadCloud className="w-6 h-6 text-[#AAA2BE]" />
+                        {isUploadingImage ? (
+                          <Loader className="w-6 h-6 text-[#5B3FD6] animate-spin" />
+                        ) : (
+                          <UploadCloud className="w-6 h-6 text-[#AAA2BE]" />
+                        )}
                         <span className="text-xs font-bold text-[#5B3FD6]">
-                          Click to upload image
+                          {isUploadingImage
+                            ? "Uploading image..."
+                            : "Click to upload image"}
                         </span>
                         <span className="text-[10px] text-[#AAA2BE]">
-                          PNG, JPG up to 5MB
+                          {isUploadingImage
+                            ? "Please wait"
+                            : "PNG, JPG up to 5MB"}
                         </span>
                         <input
                           ref={fileInputRef}
                           type="file"
                           accept="image/*"
                           onChange={handleImageUpload}
+                          disabled={isUploadingImage}
                           className="hidden"
                         />
                       </div>
@@ -1412,7 +1462,7 @@ const Products = () => {
             <div className="flex justify-end gap-3 px-6 py-4 border-t border-[#E7DFF2] bg-[#FAF8FE] shrink-0">
               <button
                 onClick={closeProductModal}
-                disabled={isSaving}
+                disabled={isSaving || isUploadingImage}
                 className="px-4 py-2.5 rounded-xl bg-white border border-[#E7DFF2] hover:bg-[#F4F0FB] text-[#8E8AA2] hover:text-[#5B3FD6] text-xs font-bold disabled:opacity-60 transition-colors cursor-pointer"
               >
                 Cancel
@@ -1420,11 +1470,17 @@ const Products = () => {
 
               <button
                 onClick={handleSaveProduct}
-                disabled={isSaving}
+                disabled={isSaving || isUploadingImage}
                 className="px-4 py-2.5 rounded-xl bg-[#5B3FD6] hover:bg-[#4C32C7] text-white text-xs font-bold disabled:opacity-60 inline-flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-[0.98]"
               >
-                {isSaving && <Loader className="w-3.5 h-3.5 animate-spin" />}
-                {editingProductId ? "Update Product" : "Save Product"}
+                {(isSaving || isUploadingImage) && (
+                  <Loader className="w-3.5 h-3.5 animate-spin" />
+                )}
+                {isUploadingImage
+                  ? "Uploading Image"
+                  : editingProductId
+                    ? "Update Product"
+                    : "Save Product"}
               </button>
             </div>
           </div>
