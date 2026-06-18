@@ -457,7 +457,11 @@ const CompanyRegistration = () => {
           response.data.accessToken ||
           response.data.access_token ||
           response.data.jwt;
-        if (authToken) localStorage.setItem('authToken', authToken);
+        if (authToken) {
+          localStorage.setItem('authToken', authToken);
+          // Set default axios header for subsequent requests
+          api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+        }
         if (response.data.user) {
           localStorage.setItem('lt_user', JSON.stringify(response.data.user));
           setUser(response.data.user);
