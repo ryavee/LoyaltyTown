@@ -24,6 +24,10 @@ export const toProductViewModel = (product, fallback = {}) => ({
   image: product?.imageUrl ?? product?.image ?? fallback.image ?? "",
   status:
     (product?.status ?? fallback.status) === "INACTIVE" ? "Inactive" : "Active",
+  createdAt:
+    product?.createdAt?.split?.("T")[0] ??
+    fallback.createdAt ??
+    "",
 });
 
 const unwrapProduct = (response) => {
@@ -57,6 +61,35 @@ export const uploadProductImage = async (file) => {
   const data = response.data?.data ?? response.data;
 
   return toAbsoluteImageUrl(data?.imageUrl ?? data?.url);
+};
+
+export const getProducts = async () => {
+  const response = await api.get("/products");
+  const data = response.data?.data ?? response.data;
+  const products = Array.isArray(data) ? data : data?.products;
+
+  if (!Array.isArray(products)) {
+    throw new Error("The products API returned an invalid response.");
+  }
+
+  return products.map((product) => toProductViewModel(product));
+};
+
+export const exportProducts = async () => {
+  const response = await api.get("/products/export", {
+    responseType: "blob",
+  });
+
+  return response.data;
+};
+
+export const importProducts = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+
+  // Axios/browser supplies the multipart boundary.
+  const response = await api.post("/products/import", formData);
+  return response.data?.data ?? response.data;
 };
 
 export const createProduct = async (product) => {

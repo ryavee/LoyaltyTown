@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   AlertCircle,
   Box,
@@ -23,7 +23,6 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import Papa from "papaparse";
 
 import ExportButton from "../Components/ExportButton";
 import ImportButton from "../Components/ImportButton";
@@ -32,56 +31,14 @@ import ConfirmationModal from "../Components/ConfirmationModal";
 import Pagination from "../Components/Reusable/Pagination";
 import {
   createProduct,
+  exportProducts,
+  getProducts,
+  importProducts,
   toProductViewModel,
   updateProduct,
   uploadProductImage,
 } from "../services/products";
 import { getCurrentUserRole, ROLES } from "../utils/rbac";
-
-const initialProducts = [
-  {
-    id: "1",
-    productName: "Premium Birch Plywood",
-    sku: "PLY-BIRCH-18",
-    brand: "CenturyPly",
-    category: "Plywood",
-    mrp: 4500,
-    description: "18mm Waterproof Marine Grade, suitable for premium kitchens and outdoor installations.",
-    basePoints: 120,
-    cashbackAmount: 90,
-    status: "Active",
-    image: "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=300&auto=format&fit=crop&q=80",
-    createdAt: "2026-06-15",
-  },
-  {
-    id: "2",
-    productName: "Glossy Laminate Sheet",
-    sku: "LAM-GLOSS-08",
-    brand: "Greenlam",
-    category: "Laminate",
-    mrp: 1800,
-    description: "8x4 ft - High Gloss Wooden Texture sheet, scratch-resistant and easy to clean.",
-    basePoints: 50,
-    cashbackAmount: 35,
-    status: "Active",
-    image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=300&auto=format&fit=crop&q=80",
-    createdAt: "2026-06-13",
-  },
-  {
-    id: "3",
-    productName: "Premium Acrylic Veneer",
-    sku: "VEN-ACRY-04",
-    brand: "Decoply",
-    category: "Veneer",
-    mrp: 6500,
-    description: "4mm Decorative Charcoal Finish Veneer for luxury cabinets and wall paneling.",
-    basePoints: 200,
-    cashbackAmount: 150,
-    status: "Inactive",
-    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=300&auto=format&fit=crop&q=80",
-    createdAt: "2026-06-12",
-  }
-];
 
 const categories = ["Plywood", "Laminate", "Veneer", "Hardware", "Adhesive"];
 
@@ -124,7 +81,9 @@ const Products = () => {
   const currentUserRole = getCurrentUserRole();
   const canManageProducts = currentUserRole !== ROLES.QR_GENERATE;
 
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [productsError, setProductsError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -142,10 +101,48 @@ const Products = () => {
   const [productForm, setProductForm] = useState(emptyProduct);
   const [formError, setFormError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imageTab, setImageTab] = useState("upload"); // upload or url
 
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    const loadProducts = async () => {
+      setIsLoadingProducts(true);
+      setProductsError("");
+
+      try {
+        const fetchedProducts = await getProducts();
+        if (isCurrent) {
+          setProducts(fetchedProducts);
+        }
+      } catch (error) {
+        if (!isCurrent) return;
+
+        const backendMessage = error.response?.data?.message;
+        const message = Array.isArray(backendMessage)
+          ? backendMessage.join(" ")
+          : backendMessage || error.message || "Unable to load products.";
+
+        setProductsError(message);
+        toast.error(message);
+      } finally {
+        if (isCurrent) {
+          setIsLoadingProducts(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
 
   // Stats
   const totalProducts = products.length;
@@ -474,59 +471,66 @@ const Products = () => {
     }
   };
 
-  const handleImportProducts = (file) => {
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        if (!results.data || results.data.length === 0) {
-          toast.error("CSV file is empty");
-          return;
-        }
+  const handleImportProducts = async (file) => {
+    setIsImporting(true);
 
-        try {
-          const imported = results.data.map((row, index) => {
-            const productName = row["Product Name"] || row["productName"] || "";
-            const sku = row["SKU"] || row["sku"] || `SKU-${Date.now()}-${index}`;
-            const brand = row["Brand"] || row["brand"] || "";
-            const category = row["Category"] || row["category"] || "Plywood";
-            const mrp = Number(row["MRP"] || row["mrp"] || 0);
-            const description = row["Description"] || row["description"] || "";
-            const basePoints = Number(row["Base Points"] || row["basePoints"] || 0);
-            const cashbackAmount = Number(row["Cashback"] || row["cashbackAmount"] || 0);
-            const status = row["Status"] || row["status"] || "Active";
+    try {
+      const result = await importProducts(file);
+      const refreshedProducts = await getProducts();
+      const importedCount =
+        result?.importedCount ??
+        result?.count ??
+        result?.createdCount;
 
-            return {
-              id: (Date.now() + index).toString(),
-              productName,
-              sku,
-              brand,
-              category,
-              mrp,
-              description,
-              basePoints,
-              cashbackAmount,
-              status:
-                status.toLowerCase() === "inactive" ||
-                status.toLowerCase() === "draft"
-                  ? "Inactive"
-                  : "Active",
-              image: "",
-              createdAt: new Date().toISOString().split("T")[0],
-            };
-          });
+      setProducts(refreshedProducts);
+      setProductsError("");
+      setCurrentPage(1);
+      toast.success(
+        importedCount !== undefined
+          ? `Successfully imported ${importedCount} products`
+          : "Products imported successfully"
+      );
+    } catch (error) {
+      const backendMessage = error.response?.data?.message;
+      const message = Array.isArray(backendMessage)
+        ? backendMessage.join(" ")
+        : backendMessage || "Unable to import products.";
 
-          setProducts((currentProducts) => [...imported, ...currentProducts]);
-          toast.success(`Successfully imported ${imported.length} products`);
-          setCurrentPage(1);
-        } catch (error) {
-          toast.error(`Error processing CSV data: ${error.message}`);
-        }
-      },
-      error: (err) => {
-        toast.error(`Error parsing CSV file: ${err.message}`);
-      },
-    });
+      toast.error(message);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleExportProducts = async () => {
+    setIsExporting(true);
+
+    try {
+      const csvBlob = await exportProducts();
+      const blob =
+        csvBlob instanceof Blob
+          ? csvBlob
+          : new Blob([csvBlob], { type: "text/csv;charset=utf-8" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "products.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("Products exported successfully");
+    } catch (error) {
+      const backendMessage = error.response?.data?.message;
+      const message = Array.isArray(backendMessage)
+        ? backendMessage.join(" ")
+        : backendMessage || "Unable to export products.";
+
+      toast.error(message);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const confirmDelete = () => {
@@ -711,20 +715,26 @@ const Products = () => {
           <div className="flex flex-wrap items-center gap-3">
             <ImportButton
               requiredHeaders={[
-                { key: "productName", header: "Product Name" },
+                {
+                  key: "name",
+                  header: "Product Name",
+                  aliases: ["Name"],
+                },
                 { key: "sku", header: "SKU" },
                 { key: "category", header: "Category" },
                 { key: "mrp", header: "MRP" },
               ]}
               onUpload={handleImportProducts}
-              label="Import CSV"
+              label={isImporting ? "Importing..." : "Import CSV"}
+              disabled={isLoadingProducts || isImporting}
             />
 
             <ExportButton
               data={sortedProducts}
               columns={productColumns}
               filename="products"
-              disabled={sortedProducts.length === 0}
+              customExport={handleExportProducts}
+              disabled={isLoadingProducts || isExporting || isImporting}
             />
 
             <button
@@ -740,7 +750,19 @@ const Products = () => {
       </div>
 
       {/* Main View Area */}
-      {sortedProducts.length === 0 ? (
+      {isLoadingProducts ? (
+        <div className="bg-white/95 backdrop-blur-md rounded-xl border border-[#E7DFF2] p-12 flex items-center justify-center gap-2 text-sm font-semibold text-[#5B3FD6] shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
+          <Loader className="w-5 h-5 animate-spin" />
+          Loading products...
+        </div>
+      ) : productsError ? (
+        <div className="bg-white/95 backdrop-blur-md rounded-xl border border-[#FFDDE7] p-12 text-center shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
+          <AlertCircle className="w-6 h-6 mx-auto text-[#E05A74]" />
+          <p className="mt-2 text-sm font-semibold text-[#E05A74]">
+            {productsError}
+          </p>
+        </div>
+      ) : sortedProducts.length === 0 ? (
         <div className="bg-white/95 backdrop-blur-md rounded-xl border border-[#E7DFF2] p-12 text-center text-[#8E8AA2] shadow-[0_1px_2px_rgba(43,35,64,0.04)]">
           No products found matching the criteria.
         </div>

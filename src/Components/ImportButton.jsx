@@ -40,17 +40,17 @@ const ImportCSVButton = ({
             .trim()
             .toLowerCase()
         );
-        const requiredKeys = requiredHeaders.map((h) =>
-          h.header.trim().toLowerCase()
-        );
-        const missingKeys = requiredKeys.filter(
-          (header) => !csvHeaders.includes(header)
+        const missingKeys = requiredHeaders.filter(
+          ({ header, aliases = [] }) =>
+            ![header, ...aliases]
+              .map((value) => value.trim().toLowerCase())
+              .some((value) => csvHeaders.includes(value))
         );
 
         if (missingKeys.length > 0) {
           toast.error(
             `Missing columns: ${missingKeys
-              .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
+              .map(({ header }) => header)
               .join(", ")}`
           );
           e.target.value = null;
