@@ -30,6 +30,11 @@ import ImportButton from "../Components/ImportButton";
 import ActionButtons from "../Components/Reusable/ActionButtons";
 import ConfirmationModal from "../Components/ConfirmationModal";
 import Pagination from "../Components/Reusable/Pagination";
+import {
+  createProduct,
+  toProductViewModel,
+  updateProduct,
+} from "../services/products";
 import { getCurrentUserRole, ROLES } from "../utils/rbac";
 
 const initialProducts = [
@@ -100,6 +105,18 @@ const emptyProduct = {
   cashbackAmount: "0",
   image: "",
   status: "Active",
+};
+
+const SortIndicator = ({ sortKey, sortConfig }) => {
+  if (!sortKey) return null;
+  if (sortConfig.key !== sortKey) {
+    return <ChevronsUpDown className="w-3.5 h-3.5 text-[#AAA2BE]" />;
+  }
+  return sortConfig.direction === "asc" ? (
+    <ChevronUp className="w-3.5 h-3.5 text-[#5B3FD6]" />
+  ) : (
+    <ChevronDown className="w-3.5 h-3.5 text-[#5B3FD6]" />
+  );
 };
 
 const Products = () => {
@@ -247,14 +264,11 @@ const Products = () => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProductForm((prev) => ({
-        ...prev,
-        image: reader.result,
-      }));
-    };
-    reader.readAsDataURL(file);
+    event.target.value = "";
+    toast.error(
+      "Direct image upload is not configured yet. Upload the image to your CDN and use its URL."
+    );
+    setImageTab("url");
   };
 
   const openAddModal = () => {
@@ -291,7 +305,7 @@ const Products = () => {
     setFormError("");
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     const productName = productForm.productName.trim();
     const sku = productForm.sku.trim();
     const brand = productForm.brand.trim();
@@ -328,6 +342,27 @@ const Products = () => {
       return;
     }
 
+    if (image?.startsWith("data:")) {
+      setFormError(
+        "Base64 images cannot be saved. Upload the image to your CDN and paste its HTTPS URL."
+      );
+      setImageTab("url");
+      return;
+    }
+
+    if (image) {
+      try {
+        const imageUrl = new URL(image);
+        if (!["http:", "https:"].includes(imageUrl.protocol)) {
+          throw new Error("Unsupported image URL protocol");
+        }
+      } catch {
+        setFormError("Product image must be a valid HTTP or HTTPS URL.");
+        setImageTab("url");
+        return;
+      }
+    }
+
     const skuExists = products.some(
       (product) =>
         product.id !== editingProductId &&
@@ -341,12 +376,17 @@ const Products = () => {
 
     setIsSaving(true);
 
-    setTimeout(() => {
+    try {
       if (editingProductId) {
+        const updatedProduct = await updateProduct(
+          editingProductId,
+          productForm
+        );
+
         setProducts((currentProducts) =>
           currentProducts.map((product) =>
             product.id === editingProductId
-              ? {
+              ? toProductViewModel(updatedProduct, {
                   ...product,
                   productName,
                   sku,
@@ -358,15 +398,17 @@ const Products = () => {
                   cashbackAmount,
                   image,
                   status,
-                }
+                })
               : product
           )
         );
         toast.success("Product updated successfully");
       } else {
+        const createdProduct = await createProduct(productForm);
+
         setProducts((currentProducts) => [
-          {
-            id: Date.now().toString(),
+          toProductViewModel(createdProduct, {
+            id: createdProduct?.id ?? Date.now().toString(),
             productName,
             sku,
             brand,
@@ -378,16 +420,25 @@ const Products = () => {
             image,
             status,
             createdAt: new Date().toISOString().split("T")[0],
-          },
+          }),
           ...currentProducts,
         ]);
         toast.success("Product added successfully");
       }
 
-      setIsSaving(false);
       setCurrentPage(1);
       closeProductModal();
-    }, 400);
+    } catch (error) {
+      const backendMessage = error.response?.data?.message;
+      const message = Array.isArray(backendMessage)
+        ? backendMessage.join(" ")
+        : backendMessage || "Unable to save product. Please try again.";
+
+      setFormError(message);
+      toast.error(message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleImportProducts = (file) => {
@@ -509,18 +560,6 @@ const Products = () => {
   const cashbackPct = mrpVal > 0 ? (cashbackVal / mrpVal) * 100 : 0;
   const effectiveCost = mrpVal - cashbackVal;
   const pointsYield = mrpVal > 0 ? (pointsVal / mrpVal) * 100 : 0;
-
-  const SortIndicator = ({ sortKey }) => {
-    if (!sortKey) return null;
-    if (sortConfig.key !== sortKey) {
-      return <ChevronsUpDown className="w-3.5 h-3.5 text-[#AAA2BE]" />;
-    }
-    return sortConfig.direction === "asc" ? (
-      <ChevronUp className="w-3.5 h-3.5 text-[#5B3FD6]" />
-    ) : (
-      <ChevronDown className="w-3.5 h-3.5 text-[#5B3FD6]" />
-    );
-  };
 
   return (
     <div className="space-y-5 pb-8">
@@ -839,7 +878,7 @@ const Products = () => {
                   >
                     <div className="flex items-center gap-1.5">
                       <span>SKU</span>
-                      <SortIndicator sortKey="sku" />
+                      <SortIndicator sortKey="sku" sortConfig={sortConfig} />
                     </div>
                   </th>
                   <th
@@ -848,7 +887,10 @@ const Products = () => {
                   >
                     <div className="flex items-center gap-1.5">
                       <span>Category</span>
-                      <SortIndicator sortKey="category" />
+                      <SortIndicator
+                        sortKey="category"
+                        sortConfig={sortConfig}
+                      />
                     </div>
                   </th>
                   <th
@@ -857,7 +899,7 @@ const Products = () => {
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>MRP</span>
-                      <SortIndicator sortKey="mrp" />
+                      <SortIndicator sortKey="mrp" sortConfig={sortConfig} />
                     </div>
                   </th>
                   <th
@@ -866,7 +908,10 @@ const Products = () => {
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>Points</span>
-                      <SortIndicator sortKey="basePoints" />
+                      <SortIndicator
+                        sortKey="basePoints"
+                        sortConfig={sortConfig}
+                      />
                     </div>
                   </th>
                   <th
@@ -875,7 +920,10 @@ const Products = () => {
                   >
                     <div className="flex items-center justify-end gap-1.5">
                       <span>Cashback</span>
-                      <SortIndicator sortKey="cashbackAmount" />
+                      <SortIndicator
+                        sortKey="cashbackAmount"
+                        sortConfig={sortConfig}
+                      />
                     </div>
                   </th>
                   <th
@@ -884,7 +932,7 @@ const Products = () => {
                   >
                     <div className="flex items-center gap-1.5">
                       <span>Status</span>
-                      <SortIndicator sortKey="status" />
+                      <SortIndicator sortKey="status" sortConfig={sortConfig} />
                     </div>
                   </th>
                   {canManageProducts && (
