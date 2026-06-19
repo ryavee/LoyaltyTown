@@ -42,6 +42,11 @@ import Feed from "./pages/Feed";
 import ManageTickets from "./pages/ManageTickets";
 import Announcements from "./pages/Announcements";
 import Settings from "./pages/Settings";
+import PublicScanPage from "./pages/PublicScanPage";
+import ProductVerificationPage from "./pages/ProductVerificationPage";
+import PublicRewardPage from "./pages/PublicRewardPage";
+import PublicScanErrorPage from "./pages/PublicScanErrorPage";
+import CustomerWalletPage from "./pages/CustomerWalletPage";
 function App() {
   return (
     <BrowserRouter>
@@ -58,6 +63,11 @@ function App() {
           <Route path="/register-company" element={<CompanyRegistration />} />
           <Route path="/checkout" element={<SaveCardDetails />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/scan/:code" element={<PublicScanPage />} />
+          <Route path="/product-verification" element={<ProductVerificationPage />} />
+          <Route path="/reward" element={<PublicRewardPage />} />
+          <Route path="/error" element={<PublicScanErrorPage />} />
+          <Route path="/wallet" element={<CustomerWalletPage />} />
 
           {/* ======================
               ADMIN LAYOUT (protected)
