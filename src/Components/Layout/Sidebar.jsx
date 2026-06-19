@@ -30,6 +30,7 @@ import {
   ScanLine,
   Hash,
   Layers,
+  BarChart3,
 } from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
@@ -86,9 +87,14 @@ const Sidebar = ({
           path: "/qr-codes",
         },
         {
-          name: "Scan Log",
+          name: "Scan Logs",
           icon: ScanLine,
-          path: "/scan-log",
+          path: "/scan-logs",
+        },
+        {
+          name: "QR Analytics",
+          icon: BarChart3,
+          path: "/qr-analytics",
         },
 
        
@@ -203,7 +209,11 @@ const Sidebar = ({
     "QR Generate": [
       "Dealers",
       "Products",
-      "QR Generation",
+      "Generate QR",
+      "QR Batches",
+      "QR Codes",
+      "Scan Logs",
+      "QR Analytics",
     ],
   };
 
@@ -234,7 +244,7 @@ const Sidebar = ({
       role === "QR Generate" &&
       location.pathname === "/dashboard"
     ) {
-      navigate("/qr", { replace: true });
+      navigate("/qr-generation", { replace: true });
     }
   }, [role, navigate, location.pathname]);
 

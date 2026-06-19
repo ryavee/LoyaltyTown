@@ -28,6 +28,11 @@ import Dealers from "./pages/Dealers";
 
 import Products from "./pages/Products";
 import QRGeneration from "./pages/QRGeneration";
+import QRBatches from "./pages/QRBatches";
+import QRBatchDetails from "./pages/QRBatchDetails";
+import QRCodes from "./pages/QRCodes";
+import ScanLogs from "./pages/ScanLogs";
+import QRAnalyticsPlaceholder from "./pages/QRAnalyticsPlaceholder";
 import QRTrack from "./pages/QRTrack";
 
 import Catalogue from "./pages/Catalogue";
@@ -62,6 +67,11 @@ function App() {
 
             {/* QR Management */}
             <Route path="/qr-generation" element={<QRGeneration />} />
+            <Route path="/qr-batches" element={<QRBatches />} />
+            <Route path="/qr-batches/:id" element={<QRBatchDetails />} />
+            <Route path="/qr-codes" element={<QRCodes />} />
+            <Route path="/scan-logs" element={<ScanLogs />} />
+            <Route path="/qr-analytics" element={<QRAnalyticsPlaceholder />} />
 
             {/* USERS */}
             <Route path="/factoryUsers" element={<AdminUsers />} />

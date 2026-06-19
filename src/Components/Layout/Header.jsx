@@ -35,9 +35,31 @@ const PAGE_CONFIG = {
     title: "Products",
     subtitle: "Manage product catalogue, units, and reward point values.",
   },
-  "/qr": {
-    title: "QR Generation",
-    subtitle: "Create, batch-generate and download QR campaigns",
+  "/qr-generation": {
+    title: "Generate QR",
+    subtitle: "Create a product-linked QR batch with a live preview",
+  },
+  "/qr-batches": {
+    title: "QR Batches",
+    subtitle: "Review, download, and manage generated QR batches",
+  },
+  "/qr-batches/:id": {
+    title: "Batch Details",
+    subtitle: "View batch information, usage, and export options",
+    backTo: "/qr-batches",
+    backLabel: "QR Batches",
+  },
+  "/qr-codes": {
+    title: "QR Codes",
+    subtitle: "Monitor individual QR codes and their current status",
+  },
+  "/scan-logs": {
+    title: "Scan Logs",
+    subtitle: "Review QR validation events, devices, and locations",
+  },
+  "/qr-analytics": {
+    title: "QR Analytics",
+    subtitle: "Track generation, scanning, and fraud trends",
   },
   "/track": {
     title: "QR Track",
