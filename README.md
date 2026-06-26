@@ -1,35 +1,8 @@
 # 🚀 LoyaltyTown Admin Panel
 
-A modern **Admin Dashboard** for managing customer engagement, QR tracking, rewards, and analytics.
-
----
-
-## ✨ Features
-
-- 📊 Dashboard with key metrics  
-- 👥 User & Dealer Management  
-- 🔳 QR Generation & Tracking  
-- 🎁 Rewards & Redemption  
-- 🔐 Role-based access  
-- 📱 Responsive UI  
-
----
-
-## 🛠️ Tech Stack
-
-- React.js  
-- Vite  
-- Tailwind CSS  
-- React Router  
-- Lucide Icons  
-
----
-
-## 🚀 Run Locally
-
-```bash
-git clone https://github.com/ryavee/LoyaltyTown.git
-cd LoyaltyTown
-npm install
-npm run dev
-Open: http://localhost:5173
+- https://loyaltytown.com/v1/auth/login
+- https://loyaltytown.com/v1/products
+- https://loyaltytown.com/v1/auth/check
+- https://loyaltytown.com/v1/uploads/product-image
+- https://loyaltytown.com/v1/products POST Add Product
+- https://loyaltytown.com/v1/qr/generate

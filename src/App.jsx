@@ -32,7 +32,10 @@ import QRBatches from "./pages/QRBatches";
 import QRBatchDetails from "./pages/QRBatchDetails";
 import QRCodes from "./pages/QRCodes";
 import ScanLogs from "./pages/ScanLogs";
-import QRAnalyticsPlaceholder from "./pages/QRAnalyticsPlaceholder";
+import QRAnalyticsDashboard from "./pages/QRAnalytics/Dashboard";
+import ScanTrends from "./pages/QRAnalytics/ScanTrends";
+import ProductPerformance from "./pages/QRAnalytics/ProductPerformance";
+import BatchPerformance from "./pages/QRAnalytics/BatchPerformance";
 import QRTrack from "./pages/QRTrack";
 
 import Catalogue from "./pages/Catalogue";
@@ -47,6 +50,11 @@ import ProductVerificationPage from "./pages/ProductVerificationPage";
 import PublicRewardPage from "./pages/PublicRewardPage";
 import PublicScanErrorPage from "./pages/PublicScanErrorPage";
 import CustomerWalletPage from "./pages/CustomerWalletPage";
+import CustomerWallet from "./pages/customers/Wallet";
+import CampaignList from "./pages/campaigns/CampaignList";
+import CampaignCreate from "./pages/campaigns/CampaignCreate";
+import CampaignDetails from "./pages/campaigns/CampaignDetails";
+import CampaignEdit from "./pages/campaigns/CampaignEdit";
 function App() {
   return (
     <BrowserRouter>
@@ -81,7 +89,19 @@ function App() {
             <Route path="/qr-batches/:id" element={<QRBatchDetails />} />
             <Route path="/qr-codes" element={<QRCodes />} />
             <Route path="/scan-logs" element={<ScanLogs />} />
-            <Route path="/qr-analytics" element={<QRAnalyticsPlaceholder />} />
+            <Route path="/qr-analytics" element={<QRAnalyticsDashboard />} />
+            <Route path="/qr-analytics/scan-trends" element={<ScanTrends />} />
+            <Route path="/qr-analytics/product-performance" element={<ProductPerformance />} />
+            <Route path="/qr-analytics/batch-performance" element={<BatchPerformance />} />
+
+            {/* Admin customer wallet */}
+            <Route path="/customers/:id/wallet" element={<CustomerWallet />} />
+
+            {/* Campaigns */}
+            <Route path="/campaigns" element={<CampaignList />} />
+            <Route path="/campaigns/create" element={<CampaignCreate />} />
+            <Route path="/campaigns/:id" element={<CampaignDetails />} />
+            <Route path="/campaigns/:id/edit" element={<CampaignEdit />} />
 
             {/* USERS */}
             <Route path="/factoryUsers" element={<AdminUsers />} />

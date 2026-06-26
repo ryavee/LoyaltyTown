@@ -39,6 +39,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide the browser's default date ghost text when empty */
+input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-text,
+input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-month-field,
+input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-day-field,
+input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-year-field {
+  color: transparent;
+}
+
 
 /* =======================
    ANIMATIONS

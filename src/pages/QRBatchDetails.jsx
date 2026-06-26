@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { ArrowLeft, Download, FileSpreadsheet, FileText, Hash, QrCode, ScanLine, TimerOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import api from "../services/api";
 import { getMockQrBatches } from "../data/qrMockData";
 import { StatTile, StatusBadge } from "../Components/QR/QRUi";
 
@@ -9,6 +10,34 @@ const QRBatchDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const batch = getMockQrBatches().find((item) => item.id === id);
+
+  const downloadPdf = async () => {
+    try {
+      const response = await api.get(
+        "/qr/export/pdf",
+        {
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(
+        new Blob([response.data])
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "qrcodes.pdf";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      toast.error("PDF download failed");
+    }
+  };
 
   if (!batch) {
     return (
@@ -60,7 +89,17 @@ const QRBatchDetails = () => {
           </div>
           <div className="flex flex-wrap gap-2">
             {actions.map(([label, Icon]) => (
-              <button key={label} onClick={() => toast.success(`${label} prepared with mock data`)} className="inline-flex items-center gap-2 rounded-xl border border-[#DDD5EA] bg-white px-3.5 py-2 text-xs font-bold text-[#5B3FD6] hover:bg-[#F8F5FC]">
+              <button
+                key={label}
+                onClick={() => {
+                  if (label === "Download PDF") {
+                    downloadPdf();
+                  } else {
+                    toast.success(`${label} prepared with mock data`);
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-xl border border-[#DDD5EA] bg-white px-3.5 py-2 text-xs font-bold text-[#5B3FD6] hover:bg-[#F8F5FC]"
+              >
                 {createElement(Icon, { className: "h-4 w-4" })} {label}
               </button>
             ))}

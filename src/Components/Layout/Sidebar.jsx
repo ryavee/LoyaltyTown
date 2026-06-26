@@ -116,6 +116,11 @@ const Sidebar = ({
           icon: Briefcase,
           path: "/dealers",
         },
+            {
+              name: "Distributors",
+              icon: Package,
+              path: "/distributors",
+            },
       ],
     },
 
@@ -151,6 +156,12 @@ const Sidebar = ({
           icon: BookOpen,
           path: "/catalogue",
         },
+
+            {
+              name: "Campaigns",
+              icon: BadgePercent,
+              path: "/campaigns",
+            },
 
         {
           name: "Promotions",

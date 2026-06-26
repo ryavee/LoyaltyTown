@@ -43,9 +43,23 @@ import Dashboard from "../pages/Dashboard";
    USER MANAGEMENT
 ========================================================= */
 
-import AdminUsers from "../pages/AdminUsers";
+// legacy AdminUsers page retained in repo; new user module uses `src/pages/users/*`
 import Customers from "../pages/Customers";
-import Dealers from "../pages/Dealers";
+import CustomerWallet from "../pages/customers/Wallet";
+import Dealers from "../pages/dealers/DealerList";
+import DealerCreate from "../pages/dealers/DealerCreate";
+import DealerDetails from "../pages/dealers/DealerDetails";
+import DealerEdit from "../pages/dealers/DealerEdit";
+
+import DistributorList from "../pages/distributors/DistributorList";
+import DistributorCreate from "../pages/distributors/DistributorCreate";
+import DistributorDetails from "../pages/distributors/DistributorDetails";
+import DistributorEdit from "../pages/distributors/DistributorEdit";
+
+import UserList from "../pages/users/UserList";
+import UserCreate from "../pages/users/UserCreate";
+import UserDetails from "../pages/users/UserDetails";
+import UserEdit from "../pages/users/UserEdit";
 
 
 
@@ -194,9 +208,32 @@ const AppRoutes = () => {
         />
 
         <Route
+          path="/customers/:id/wallet"
+          element={<CustomerWallet />}
+        />
+
+        <Route
           path="/dealers"
           element={<Dealers />}
         />
+        <Route path="/dealers/create" element={<DealerCreate />} />
+        <Route path="/dealers/:id" element={<DealerDetails />} />
+        <Route path="/dealers/:id/edit" element={<DealerEdit />} />
+
+        {/* Distributors */}
+        <Route path="/distributors" element={<DistributorList />} />
+        <Route path="/distributors/create" element={<DistributorCreate />} />
+        <Route path="/distributors/:id" element={<DistributorDetails />} />
+        <Route path="/distributors/:id/edit" element={<DistributorEdit />} />
+
+        {/* Users (new module) */}
+        <Route path="/users" element={<UserList />} />
+        <Route path="/users/create" element={<UserCreate />} />
+        <Route path="/users/:id" element={<UserDetails />} />
+        <Route path="/users/:id/edit" element={<UserEdit />} />
+
+        {/* keep old factoryUsers route for compatibility */}
+        <Route path="/factoryUsers" element={<UserList />} />
 
 
 
