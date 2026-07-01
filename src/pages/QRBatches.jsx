@@ -102,9 +102,9 @@ const QRBatches = () => {
   // ── Download ──────────────────────────────────────────────────────────────
   const downloadBatch = async (batch) => {
     try {
-      const res = await api.get(`/qr/batches/${batch.id}/pdf`, {
-        responseType: "blob",
-      });
+const res = await api.get(`/qr/batches/${batch.id}/download-pdf`, {
+  responseType: "blob",
+});
       const url  = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href     = url;
