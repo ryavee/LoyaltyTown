@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Wallet, Loader2, AlertCircle } from "lucide-react";
 import { getWallet, getTransactions } from "../../services/wallet.service";
-import WalletSummaryCards from "../../components/customer/WalletSummaryCards";
-import TransactionsTable from "../../components/customer/TransactionsTable";
+import WalletSummaryCards from "../../Components/customer/WalletSummaryCards";
+import TransactionsTable from "../../Components/customer/TransactionsTable";
 import PointAdjustmentModal from "../../Components/customer/PointAdjustmentModal";
 import PointExpiryTracker from "../../Components/customer/PointExpiryTracker";
 
