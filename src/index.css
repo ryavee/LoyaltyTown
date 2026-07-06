@@ -10,33 +10,65 @@
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
 
-  /* Primary Gradient */
-  --primary-start: #2D2A2E;
-  --primary-end: #B3A08C;
+  /* Enterprise Dark Theme Tokens */
+  --primary-start: #0f172a;
+  --primary-end: #0891b2;
 
   /* Background */
-  --bg-main: #F8F9FC;
-  --bg-card: #FFFFFF;
+  --bg-main: #020617;
+  --bg-card: #0f172a;
 
   /* Text */
-  --text-primary: #1F2937;
-  --text-secondary: #6B7280;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
 
   /* Status Colors */
   --success: #00C851;
   --error: #FF3B30;
   --warning: #FFCC00;
+
+  /* Enterprise UI Rhythm */
+  --enterprise-radius: 0.5rem;
+  --enterprise-radius-sm: 0.375rem;
+  --enterprise-border: rgba(30, 41, 59, 1);
+  --enterprise-panel: rgba(15, 23, 42, 0.72);
+  --enterprise-panel-strong: rgba(2, 6, 23, 0.82);
+  --enterprise-shadow: 0 1px 2px rgba(0, 0, 0, 0.18), 0 14px 42px rgba(2, 6, 23, 0.24);
+  --enterprise-motion: 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #F8F7FC;
-  color: #2B2340;
+  min-width: 320px;
+  background-color: #020617;
+  color: #f8fafc;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+[tabindex]:not([tabindex="-1"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.9);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.28);
+  color: #f8fafc;
 }
 
 /* Hide the browser's default date ghost text when empty */
@@ -67,6 +99,53 @@ input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-year-fiel
 
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes enterpriseSlideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-enterprise-slide-up {
+  animation: enterpriseSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.enterprise-transition {
+  transition-duration: 180ms;
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enterprise-surface {
+  border: 1px solid var(--enterprise-border);
+  border-radius: var(--enterprise-radius);
+  background: var(--enterprise-panel);
+  box-shadow: var(--enterprise-shadow);
+}
+
+.enterprise-interactive {
+  transition:
+    border-color var(--enterprise-motion),
+    background-color var(--enterprise-motion),
+    box-shadow var(--enterprise-motion),
+    color var(--enterprise-motion),
+    opacity var(--enterprise-motion),
+    transform var(--enterprise-motion);
+}
+
+.enterprise-interactive:hover {
+  border-color: rgba(71, 85, 105, 0.96);
+}
+
+.enterprise-interactive:active {
+  transform: translateY(1px);
 }
 
 /* Modal pop animation */
@@ -108,7 +187,7 @@ input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-year-fiel
 /* App-wide themed scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #B8A6F3 #F2ECFA;
+  scrollbar-color: #334155 #020617;
 }
 
 *::-webkit-scrollbar {
@@ -117,21 +196,21 @@ input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-year-fiel
 }
 
 *::-webkit-scrollbar-track {
-  background: #F2ECFA;
+  background: #020617;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #B8A6F3;
-  border: 2px solid #F2ECFA;
+  background-color: #334155;
+  border: 2px solid #020617;
   border-radius: 9999px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #5B3FD6;
+  background-color: #475569;
 }
 
 *::-webkit-scrollbar-corner {
-  background: #F2ECFA;
+  background: #020617;
 }
 
 /* Chrome / Edge / Safari */
@@ -141,24 +220,24 @@ input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-year-fiel
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #F2ECFA;
+  background: #020617;
   border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #B8A6F3;
+  background-color: #334155;
   border-radius: 9999px;
   transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: #5B3FD6;
+  background-color: #475569;
 }
 
 /* Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #B8A6F3 #F2ECFA;
+  scrollbar-color: #334155 #020617;
 }
 
 
@@ -170,4 +249,35 @@ input.expiry-date-input:not(:focus):not(:valid)::-webkit-datetime-edit-year-fiel
 .recharts-wrapper:focus,
 .recharts-surface:focus {
   outline: none !important;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 9999;
+  transform: translateY(-150%);
+  border-radius: 0.375rem;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  background: #020617;
+  color: #e0f2fe;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

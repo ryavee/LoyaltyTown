@@ -1,0 +1,1 @@
+export const retailerWalletSummary = { pointsEarned: "386K", pointsRedeemed: "92K", cashbackEarned: "$42K", availableBalance: "$24K", pendingPayout: "$8K", tierStatus: "Gold", leaderboardRank: "#12" };

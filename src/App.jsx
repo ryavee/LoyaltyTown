@@ -4,62 +4,48 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
-import AdminLayout from "./Components/Layout/AdminLayout";
 import { AuthProvider } from './contexts/AuthContext';
-import RequireAuth from './Components/RequireAuth';
+import RouteErrorBoundary from "./Components/enterprise/feedback/RouteErrorBoundary";
+import EnterpriseRoutes from "./Routes/EnterpriseRoutes";
+const EnterpriseLayout = lazy(() => import("./Components/Layout/EnterpriseLayout"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 /* =========================
    PAGES
 ========================= */
 
-import Dashboard from "./pages/Dashboard";
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const CompanyRegistration = lazy(() => import("./pages/CompanyRegistration"));
+const SaveCardDetails = lazy(() => import("./pages/SaveCardDetails"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const PublicScanPage = lazy(() => import("./pages/PublicScanPage"));
+const ProductVerificationPage = lazy(() => import("./pages/ProductVerificationPage"));
+const PublicRewardPage = lazy(() => import("./pages/PublicRewardPage"));
+const PublicScanErrorPage = lazy(() => import("./pages/PublicScanErrorPage"));
+const CustomerWalletPage = lazy(() => import("./pages/CustomerWalletPage"));
+const ConsumerPortal = lazy(() => import("./pages/consumer/ConsumerPortal"));
+const GlobalDistributionRoutes = lazy(() => import("./routes/AppRoutes.tsx"));
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import LandingPage from "./pages/LandingPage";
-import CompanyRegistration from "./pages/CompanyRegistration";
-import SaveCardDetails from "./pages/SaveCardDetails";
-import ForgotPassword from "./pages/ForgotPassword";
+const RouteLoadingState = () => (
+  <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-300">
+    <div className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900 px-4 py-3 shadow-sm shadow-black/20">
+      <div className="h-4 w-4 animate-spin rounded-full border-2 border-cyan-300 border-t-transparent" />
+      <span className="text-sm font-semibold">Loading workspace</span>
+    </div>
+  </div>
+);
 
-import AdminUsers from "./pages/AdminUsers";
-import Customers from "./pages/Customers";
-import Dealers from "./pages/Dealers";
-
-import Products from "./pages/Products";
-import QRGeneration from "./pages/QRGeneration";
-import QRBatches from "./pages/QRBatches";
-import QRBatchDetails from "./pages/QRBatchDetails";
-import QRCodes from "./pages/QRCodes";
-import ScanLogs from "./pages/ScanLogs";
-import QRAnalyticsDashboard from "./pages/QRAnalytics/Dashboard";
-import ScanTrends from "./pages/QRAnalytics/ScanTrends";
-import ProductPerformance from "./pages/QRAnalytics/ProductPerformance";
-import BatchPerformance from "./pages/QRAnalytics/BatchPerformance";
-import QRTrack from "./pages/QRTrack";
-
-import Catalogue from "./pages/Catalogue";
-import Promotions from "./pages/Promotions";
-import Redemption from "./pages/Redemption";
-import Feed from "./pages/Feed";
-import ManageTickets from "./pages/ManageTickets";
-import Announcements from "./pages/Announcements";
-import Settings from "./pages/Settings";
-import PublicScanPage from "./pages/PublicScanPage";
-import ProductVerificationPage from "./pages/ProductVerificationPage";
-import PublicRewardPage from "./pages/PublicRewardPage";
-import PublicScanErrorPage from "./pages/PublicScanErrorPage";
-import CustomerWalletPage from "./pages/CustomerWalletPage";
-import CustomerWallet from "./pages/customers/Wallet";
-import CampaignList from "./pages/campaigns/CampaignList";
-import CampaignCreate from "./pages/campaigns/CampaignCreate";
-import CampaignDetails from "./pages/campaigns/CampaignDetails";
-import CampaignEdit from "./pages/campaigns/CampaignEdit";
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
+        <RouteErrorBoundary>
+          <Suspense fallback={<RouteLoadingState />}>
+            <Routes>
 
           {/* ======================
               PUBLIC ROUTES
@@ -71,68 +57,34 @@ function App() {
           <Route path="/register-company" element={<CompanyRegistration />} />
           <Route path="/checkout" element={<SaveCardDetails />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/public-scan" element={<PublicScanPage />} />
           <Route path="/scan/:code" element={<PublicScanPage />} />
+          <Route path="/verify/:code" element={<PublicScanPage />} />
           <Route path="/product-verification" element={<ProductVerificationPage />} />
           <Route path="/reward" element={<PublicRewardPage />} />
           <Route path="/error" element={<PublicScanErrorPage />} />
           <Route path="/wallet" element={<CustomerWalletPage />} />
+          <Route path="/consumer-wallet" element={<ConsumerPortal mode="wallet" />} />
+          <Route path="/consumer-profile" element={<ConsumerPortal mode="profile" />} />
+          <Route path="/consumer-support" element={<ConsumerPortal mode="support" />} />
+          <Route path="/consumer-referral" element={<ConsumerPortal mode="referral" />} />
+          <Route path="/consumer-offers" element={<ConsumerPortal mode="offers" />} />
+          <Route path="/consumer-app/*" element={<ConsumerPortal />} />
+          <Route path="/global/*" element={<GlobalDistributionRoutes />} />
 
           {/* ======================
-              ADMIN LAYOUT (protected)
+              ENTERPRISE APPLICATION SHELL
           ====================== */}
-          <Route element={<RequireAuth><AdminLayout /></RequireAuth>}>
-            <Route path="/dashboard" element={<Dashboard />} />
-
-            {/* QR Management */}
-            <Route path="/qr-generation" element={<QRGeneration />} />
-            <Route path="/qr-batches" element={<QRBatches />} />
-            <Route path="/qr-batches/:id" element={<QRBatchDetails />} />
-            <Route path="/qr-codes" element={<QRCodes />} />
-            <Route path="/scan-logs" element={<ScanLogs />} />
-            <Route path="/qr-analytics" element={<QRAnalyticsDashboard />} />
-            <Route path="/qr-analytics/scan-trends" element={<ScanTrends />} />
-            <Route path="/qr-analytics/product-performance" element={<ProductPerformance />} />
-            <Route path="/qr-analytics/batch-performance" element={<BatchPerformance />} />
-
-            {/* Admin customer wallet */}
-            <Route path="/customers/:id/wallet" element={<CustomerWallet />} />
-
-            {/* Campaigns */}
-            <Route path="/campaigns" element={<CampaignList />} />
-            <Route path="/campaigns/create" element={<CampaignCreate />} />
-            <Route path="/campaigns/:id" element={<CampaignDetails />} />
-            <Route path="/campaigns/:id/edit" element={<CampaignEdit />} />
-
-            {/* USERS */}
-            <Route path="/factoryUsers" element={<AdminUsers />} />
-            <Route path="/customers" element={<Customers />} />
-            <Route path="/dealers" element={<Dealers />} />
-
-            {/* PRODUCTS */}
-            <Route path="/products" element={<Products />} />            
-            <Route path="/track" element={<QRTrack />} />
-            <Route path="/catalogue" element={<Catalogue />} />
-            <Route path="/promotions" element={<Promotions />} />
-            <Route path="/redemption" element={<Redemption />} />
-
-            {/* SYSTEM */}
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/tickets" element={<ManageTickets />} />
-            <Route path="/announcements" element={<Announcements />} />
-            <Route path="/settings" element={<Settings />} />
+          <Route element={<EnterpriseLayout />}>
+            {EnterpriseRoutes()}
           </Route>
 
           {/* 404 */}
-          <Route
-            path="*"
-            element={
-              <div className="flex items-center justify-center h-screen text-xl font-semibold">
-                404 - Page Not Found
-              </div>
-            }
-          />
+          <Route path="*" element={<NotFound />} />
 
-        </Routes>
+            </Routes>
+          </Suspense>
+        </RouteErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   );
