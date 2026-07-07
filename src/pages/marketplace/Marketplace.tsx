@@ -5,8 +5,8 @@ import { marketplaceListings } from "../../data/loyaltyTownDemoData";
 export default function Marketplace() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Distribution Marketplace" description="Connect manufacturers, distributors, dealers, retailers, and contractors through verified network opportunities." />
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <PageHeader title="Distribution Marketplace" description="Connect manufacturers, distributors, dealers, retailers, contractors, and suppliers through verified network opportunities." />
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {marketplaceListings.map((listing) => (
           <article key={listing.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
             <div className="flex items-start justify-between gap-3">

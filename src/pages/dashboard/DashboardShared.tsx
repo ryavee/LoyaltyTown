@@ -1,8 +1,10 @@
 import { BarChart3, Building2, Handshake, QrCode, ShoppingCart, Trophy } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import DataTable from "../../components/DataTable";
 import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
-import { chartData, platformStats } from "../../data/loyaltyTownDemoData";
+import StatusBadge from "../../components/StatusBadge";
+import { chartData, networkRows, platformStats, type NetworkRow } from "../../data/loyaltyTownDemoData";
 
 type RoleDashboardProps = {
   title: string;
@@ -78,6 +80,29 @@ export default function DashboardShared({ title, subtitle, highlights }: RoleDas
           );
         })}
       </section>
+
+      <DataTable<NetworkRow>
+        title="Priority Network Accounts"
+        description="Mock account activity across manufacturers, distributors, dealers, retailers, and contractors."
+        rows={networkRows}
+        columns={[
+          { key: "name", header: "Name" },
+          { key: "type", header: "Role" },
+          { key: "location", header: "Location" },
+          { key: "revenue", header: "Revenue", align: "right" },
+          { key: "scans", header: "QR Scans", align: "right" },
+          {
+            key: "status",
+            header: "Status",
+            render: (row) => (
+              <StatusBadge
+                status={row.status}
+                tone={row.status === "Healthy" ? "success" : row.status === "Watch" ? "warning" : "info"}
+              />
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -11,6 +11,9 @@ export type ChartPoint = {
   scans: number;
   orders: number;
   network: number;
+  dealerPerformance?: number;
+  rewardPayout?: number;
+  erpSync?: number;
 };
 
 export type MarketplaceListing = {
@@ -21,6 +24,16 @@ export type MarketplaceListing = {
   description: string;
   verified: boolean;
   tags: string[];
+};
+
+export type NetworkRow = {
+  id: string;
+  name: string;
+  type: string;
+  location: string;
+  revenue: string;
+  scans: string;
+  status: string;
 };
 
 export const platformStats: Stat[] = [
@@ -37,15 +50,27 @@ export const platformStats: Stat[] = [
 ];
 
 export const chartData: ChartPoint[] = [
-  { name: "Jan", revenue: 32, scans: 48, orders: 24, network: 36 },
-  { name: "Feb", revenue: 38, scans: 54, orders: 29, network: 42 },
-  { name: "Mar", revenue: 44, scans: 63, orders: 33, network: 48 },
-  { name: "Apr", revenue: 52, scans: 76, orders: 41, network: 57 },
-  { name: "May", revenue: 61, scans: 88, orders: 49, network: 66 },
-  { name: "Jun", revenue: 73, scans: 104, orders: 58, network: 74 },
+  { name: "Jan", revenue: 32, scans: 48, orders: 24, network: 36, dealerPerformance: 72, rewardPayout: 18, erpSync: 94 },
+  { name: "Feb", revenue: 38, scans: 54, orders: 29, network: 42, dealerPerformance: 76, rewardPayout: 24, erpSync: 95 },
+  { name: "Mar", revenue: 44, scans: 63, orders: 33, network: 48, dealerPerformance: 79, rewardPayout: 31, erpSync: 93 },
+  { name: "Apr", revenue: 52, scans: 76, orders: 41, network: 57, dealerPerformance: 84, rewardPayout: 39, erpSync: 96 },
+  { name: "May", revenue: 61, scans: 88, orders: 49, network: 66, dealerPerformance: 88, rewardPayout: 47, erpSync: 97 },
+  { name: "Jun", revenue: 73, scans: 104, orders: 58, network: 74, dealerPerformance: 91, rewardPayout: 61, erpSync: 98 },
 ];
 
 export const roleDashboards = {
+  superAdmin: {
+    title: "Super Admin Control Tower",
+    subtitle: "Global platform health, tenant growth, revenue, network activity, QR adoption, marketplace velocity, and compliance signals.",
+    highlights: [
+      ["Platform Revenue", "Annual recurring and transaction revenue is up 18.4% across India, GCC, SEA, and Africa."],
+      ["Tenant Growth", "312 companies joined this quarter with 84% completing onboarding."],
+      ["Network Health", "Dealer, distributor, retailer, and contractor activity is above SLA thresholds."],
+      ["QR Adoption", "92.4M scans processed with risk alerts under 0.18% of total volume."],
+      ["Marketplace Velocity", "18,920 verified leads are moving through brand-channel matching."],
+      ["Compliance", "Audit, billing, and GST-ready workflows show no critical queue backlog."],
+    ],
+  },
   manufacturer: {
     title: "Manufacturer Command Center",
     subtitle: "Product performance, dealer network, QR scans, campaigns, customer acquisition, and rewards analytics.",
@@ -105,11 +130,21 @@ export const roleDashboards = {
   },
 };
 
+export const networkRows: NetworkRow[] = [
+  { id: "NET-1001", name: "Himalaya Pumps", type: "Manufacturer", location: "India / UAE", revenue: "$8.4M", scans: "18.2M", status: "Healthy" },
+  { id: "NET-1002", name: "Metro Distribution Co.", type: "Distributor", location: "Mumbai, Pune", revenue: "$4.8M", scans: "6.4M", status: "Healthy" },
+  { id: "NET-1003", name: "Prakash Dealer Hub", type: "Dealer", location: "Delhi NCR", revenue: "$2.1M", scans: "2.8M", status: "Watch" },
+  { id: "NET-1004", name: "BuildRight Retail", type: "Retailer", location: "Bengaluru", revenue: "$920K", scans: "840K", status: "Healthy" },
+  { id: "NET-1005", name: "Ravi Contractor Network", type: "Contractor", location: "Hyderabad", revenue: "$420K", scans: "310K", status: "Growing" },
+];
+
 export const marketplaceListings: MarketplaceListing[] = [
   { id: "MKT-1", title: "Himalaya Pumps seeks dealers", category: "Manufacturer looking for dealers", location: "North India, Nepal", description: "Industrial pump manufacturer expanding service-backed dealer network.", verified: true, tags: ["Pumps", "Industrial", "Dealer"] },
   { id: "MKT-2", title: "Prakash Dealer Hub wants premium brands", category: "Dealer looking for brands", location: "Delhi NCR, Jaipur", description: "Multi-brand dealer with strong contractor CRM and retail footfall.", verified: true, tags: ["Dealer", "Retail", "CRM"] },
   { id: "MKT-3", title: "Metro Distribution available", category: "Distributor by location", location: "Mumbai, Pune, Goa", description: "Warehousing, fleet, dealer financing, and retailer reach.", verified: true, tags: ["Distributor", "Logistics", "Finance"] },
   { id: "MKT-4", title: "BuildPro contractor network", category: "Contractors for projects", location: "Bengaluru, Hyderabad", description: "Verified contractor group available for commercial fit-out projects.", verified: false, tags: ["Contractor", "Projects", "Warranty"] },
+  { id: "MKT-5", title: "Prime Alloy Suppliers", category: "Supplier network", location: "Gujarat, UAE", description: "Verified raw material supplier for manufacturers needing recurring alloy and component sourcing.", verified: true, tags: ["Supplier", "Procurement", "Manufacturing"] },
+  { id: "MKT-6", title: "Urban Retail Alliance", category: "Retailers seeking brands", location: "Singapore, Bengaluru", description: "Retailer group ready for premium brands, loyalty campaigns, and QR-enabled sell-out programs.", verified: true, tags: ["Retailer", "Offers", "POS"] },
 ];
 
 export const qrBatches = [
